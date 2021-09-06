@@ -1,50 +1,72 @@
 #include <iostream>
-#include <vector>
-#include <algorithm>
 using namespace std;
 
 int n, m;
-vector<int> store;
-vector<int> client;
+int arr[1000001];
 
-int BinarySearch(vector<int>& arr, int target, int start, int end) {
-    while (start <= end) {
-        int mid = (start + end) / 2;
-        // Ã£Àº °æ¿ì Áß°£Á¡ ÀÎµ¦½º ¹İÈ¯
-        if (arr[mid] == target)
-            return mid;
-        // Áß°£Á¡ÀÇ °ªº¸´Ù Ã£°íÀÚ ÇÏ´Â °ªÀÌ ÀÛÀº °æ¿ì ¿ŞÂÊ È®ÀÎ
-        else if (arr[mid] > target)
-            end = mid - 1;
-        // Áß°£Á¡ÀÇ °ªº¸´Ù Ã£°íÀÚ ÇÏ´Â °ªÀÌ Å« °æ¿ì ¿À¸¥ÂÊ È®ÀÎ
-        else
-            start = mid + 1;
-    }
-    return -1;
+void swap(int* a, int* b) {
+	int tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+
+void quicksort(int* arr, int start, int end) {
+	if (start >= end) return; //ì›ì†Œê°€ 1ê°œì¸ ê²½ìš°
+	int pivot = start; //í”¼ë²—ì€ ì²« ë²ˆì§¸ ì›ì†Œ
+	int left = start + 1;
+	int right = end;
+	while (left <= right) {
+		//í”¼ë²—ë³´ë‹¤ í° ë°ì´í„°ë¥¼ ì°¾ì„ ë•Œê¹Œì§€ ë°˜ë³µ
+		while (left <= end && arr[left] <= arr[pivot]) 
+			left++;
+		// í”¼ë²—ë³´ë‹¤ ì‘ì€ ë°ì´í„°ë¥¼ ì°¾ì„ ë•Œê¹Œì§€ ë°˜ë³µ
+		while (right > start && arr[right] >= arr[pivot]) 
+			right--;
+		// ì—‡ê°ˆë ¸ë‹¤ë©´ ì‘ì€ ë°ì´í„°ì™€ í”¼ë²—ì„ êµì²´
+		if (left > right) 
+			swap(arr[pivot], arr[right]);
+		// ì—‡ê°ˆë¦¬ì§€ ì•Šì•˜ë‹¤ë©´ ì‘ì€ ë°ì´í„°ì™€ í° ë°ì´í„°ë¥¼ êµì²´
+		else 
+			swap(arr[left], arr[right]);
+	}
+	// ë¶„í•  ì´í›„ ì™¼ìª½ ë¶€ë¶„ê³¼ ì˜¤ë¥¸ìª½ ë¶€ë¶„ì—ì„œ ê°ê° ì •ë ¬ ìˆ˜í–‰
+	quicksort(arr, start, right - 1);
+	quicksort(arr, right + 1, end);
+}
+
+bool binarysearch(int* arr, int target, int start, int end) {
+	while (start <= end) {
+		int mid = (start + end) / 2;
+		if (arr[mid] == target)
+			return true;
+		if (arr[mid] > target)
+			end = mid - 1;
+		else
+			start = mid + 1;
+	}
+	return false;
 }
 
 int main(void) {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
 	cin >> n;
 	for (int i = 0; i < n; i++) {
-		int value;
-		cin >> value;
-		store.push_back(value);
+		cin >> arr[i];
 	}
-	sort(store.begin(), store.end());
+	//í€µì •ë ¬
+	quicksort(arr,0,n-1);
+
 	cin >> m;
 	for (int i = 0; i < m; i++) {
-		int value;
-		cin >> value;
-		client.push_back(value);
+		int target;
+		cin >> target;
+		bool check = binarysearch(arr, target, 0, n - 1);
+		if (check) cout << "yes" << ' ';
+		else cout << "no" << ' ';
 	}
-
-	for (int i = 0; i < m; i++) {
-		int goal = client[i]; //¼Õ´ÔÀÇ ÁÖ¹® ¹°Ç°
-		int result = BinarySearch(store, goal, 0, n - 1); //ÀÌÁøÅ½»öÀ¸·Î »óÁ¡¿¡ ÀÖ³ª È®ÀÎ
-		if (result == -1)
-			cout << "no" << ' ';
-		else
-			cout << "yes" << ' ';
-	}
+	cout << '\n';
 	return 0;
 }
