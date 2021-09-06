@@ -2,31 +2,51 @@
 #include <string>
 using namespace std;
 
-int main(void) {
-	int n;
-	string plans;
-	int x = 1 , y = 1;
-	int dx[4] = { -1,1,0,0 };
-	int dy[4] = { 0,0,-1,1 };
-	char move_type[4] = { 'U','D','L','R' };
+int n;
+int result[2] = { 0,0 };
+//ìƒí•˜ ì¢Œìš°
+const int dr[4] = { -1,1,0,0 };
+const int dc[4] = { 0,0,-1,1 };
+const char move_types[4] = { 'U','D','L','R' };
 
-	cin >> n;
-	cin.ignore(); // ¹öÆÛ ºñ¿ì±â
-	getline(cin, plans);
-	for (int i = 0; i < plans.size(); i++) {
-		char plan = plans[i];
-		int nx = -1, ny = -1;
-		for (int j = 0; j < 4; j++) {
-			if (plan == move_type[j]) {
-				nx = x + dx[j];
-				ny = y + dy[j];
+bool is_range(int row, int col) {
+	if (row <1 || col <1 || row > n || col > n)
+		return false;
+	return true;
+}
+
+void simulation(int row, int col, string s) {
+	int nr, nc;
+	for (int i = 0; i < s.length(); i++) {
+		for (int dir = 0; dir < 4; dir++) {
+			if (s[i] == move_types[dir]) {
+				nr = row + dr[dir];
+				nc = col + dc[dir];
 			}
-			if (nx < 1 || ny < 1 || nx > n || ny > n) 
-				continue;
-			x = nx;
-			y = ny;
+		}
+		if (is_range(nr, nc)) {
+			row = nr;
+			col = nc;
 		}
 	}
-	cout << x << ' ' << y << endl;
+	result[0] = row;
+	result[1] = col;
+	return;
+}
+
+int main(void) {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+	string plans;
+	cin >> n;
+	cin.ignore(); //ë²„í¼ë¹„ìš°ê¸°
+	getline(cin, plans);
+	simulation(1, 1, plans);
+	for (int i = 0; i < 2; i++) {
+		cout << result[i] << ' ';
+	}
+	cout << '\n';
 	return 0;
 }
