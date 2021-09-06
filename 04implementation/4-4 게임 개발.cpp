@@ -1,55 +1,70 @@
 #include <iostream>
 using namespace std;
 
-int n, m, x, y, direction;
-int d[50][50];
-int arr[50][50];
+int n, m;
+int r, c, dir;
+int map[50][50];
+int dist[50][50];
 
-int dx[4] = { -1, 0, 1, 0 };
-int dy[4] = { 0, 1, 0, -1 };
+int turn_left() {
+	dir -= 1;
+	if (dir == -1)
+		dir = 3;
+	return dir;
+}
 
-void turn_left() {
-    direction -= 1;
-    if (direction == -1) direction = 3;
+int simulation() {
+	const int dr[4] = { -1,0,1,0 };
+	const int dc[4] = { 0,1,0,-1 };
+	
+	int cnt = 1;
+	int turn_cnt = 0;
+	while (true) {
+		turn_left();
+		int nr = r + dr[dir];
+		int nc = c + dc[dir];
+		
+		if (dist[nr][nc] == 0 && map[nr][nc] == 0) {
+			dist[nr][nc] = 1;
+			r = nr;
+			c = nc;
+			cnt++;
+			turn_cnt = 0;
+			continue;
+		}
+		else 
+			turn_cnt++;
+		if (turn_cnt == 4) {
+			nr = r - dr[dir];
+			nc = c - dc[dir];
+			if (map[nr][nc] == 0) {
+				r = nr;
+				c = nc;
+			}
+			else
+				break;
+			turn_cnt = 0;
+		}
+	}
+	return cnt;
 }
 
 int main(void) {
-    cin >> n >> m;
-    cin >> x >> y >> direction;
-    d[x][y] = 1;
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	//맵 생성
+	
+	cin >> n >> m;
+	cin >> r >> c >> dir;
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            int x;
-            cin >> x;
-            arr[i][j] = x;
-        }
-    }
-    int cnt = 1;
-    int turn_time = 0;
-    while (true) {
-        turn_left();
-        int nx = x + dx[direction];
-        int ny = y + dy[direction];
-        if (d[nx][ny] == 0 && arr[nx][ny] == 0) {
-            d[nx][ny] = 1;
-            x = nx;
-            y = ny;
-            cnt += 1;
-            turn_time = 0;
-            continue;
-        }
-        else turn_time += 1;
-        if (turn_time == 4) {
-            nx = x - dx[direction];
-            ny = y - dy[direction];
-            if (arr[nx][ny] == 0) {
-                x = nx;
-                y = ny;
-            }
-            else break;
-            turn_time = 0;
-        }
-    }
-    cout << cnt << '\n';
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> map[i][j];
+		}
+	}
+
+	int ret = simulation();
+	cout << ret << '\n';
+	return 0;
 }
