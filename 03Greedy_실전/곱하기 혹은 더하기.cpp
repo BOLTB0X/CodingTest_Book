@@ -1,23 +1,29 @@
 #include <iostream>
 #include <string>
+
 using namespace std;
 
-string str;
+long long solution(string str) {
+    long long answer = 0;
 
-int main(void) {
-    cin >> str;
+    for (char& number : str) {
+        int n = number - '0';
 
-    long long  result = str[0] - '0';
-    for (int i = 1; i < str.size(); i++) {
-        // 두 수 중에서 하나라도 '0' 혹은 '1'인 경우, 곱하기보다는 더하기 수행
-        int num = str[i] - '0';
-        if (num <= 1 || result <= 1) {
-            result += num;
-        }
-        else {
-            result *= num;
-        }
+        if (n <= 1 || answer <= 1)
+            answer += n;
+        else
+            answer *= n;
     }
 
-    cout << result;
+    return answer;
+}
+
+int main(void) {
+    string str;
+    cin >> str;
+   
+    long long ret = solution(str);
+    cout << ret;
+
+    return 0;
 }
