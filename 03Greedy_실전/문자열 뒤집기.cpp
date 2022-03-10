@@ -2,26 +2,41 @@
 #include <string>
 using namespace std;
 
-int main() {
-	string nums;
+int solution(string str) {
+	int answer = 0;
+	int size = str.length();
 	int zero_cnt = 0; 
 	int one_cnt = 0;
-	cin >> nums;
 
-	if (nums[0] == '1') {
-		zero_cnt += 1;
-	}
-	else {
-		one_cnt += 1;
-	}
-	for (int i = 0; i<nums.length()-1; i++) {
-		if (nums[i] != nums[i + 1]) {
-			if (nums[i + 1] == '1') 
-				zero_cnt += 1;
+	if (str[0] == '1') 
+		zero_cnt++;
+	else 
+		one_cnt++;
+
+	for (int i = 0; i < size - 1; i++) {
+		//두번쨰 원소부터 확인
+		//다르다면
+		if (str[i] != str[i + 1]) {
+			//0으로 변환
+			if (str[i + 1] == '1') 
+				zero_cnt++;
+
+			//1로 변환
 			else 
-				one_cnt += 1;
+				one_cnt++;
 		}
 	}
-	int min_cnt= (one_cnt>zero_cnt) ? zero_cnt : one_cnt;
-	cout << min_cnt << endl;
+
+	answer = (one_cnt > zero_cnt) ? zero_cnt : one_cnt;
+	return answer;
+}
+
+int main(void) {
+	string nums;
+	cin >> nums;
+
+	int ret = solution(nums);
+	cout << ret;
+
+	return 0;
 }
