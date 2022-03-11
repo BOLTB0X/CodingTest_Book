@@ -1,59 +1,84 @@
 #include <iostream>
 #include <vector>
-#include <queue>
-#define INF 1e9 // ¹«ÇÑÀ» ÀÇ¹ÌÇÏ´Â °ªÀ¸·Î 10¾ïÀ» ¼³Á¤
-#define MS 30001 //ÃÖ´ë ±æÀÌ
+
+#define INF 1e9 // ë¬´í•œì„ ì˜ë¯¸í•˜ëŠ” ê°’ìœ¼ë¡œ 10ì–µì„ ì„¤ì •
+#define MS 30001 //ìµœëŒ€ ê¸¸ì´
 
 using namespace std;
 
-vector<pair<int, int> > graph[MS]; // °¢ ³ëµå¿¡ ¿¬°áµÇ¾î ÀÖ´Â ³ëµå¿¡ ´ëÇÑ Á¤º¸¸¦ ´ã´Â º¤ÅÍ
-vector<int> dist; // ÃÖ´Ü °Å¸® Å×ÀÌºí ¸¸µé±â
+typedef struct {
+    int target, cost;
+} Node;
 
+typedef struct {
+    int cur, cost;
+} Heap;
+
+Heap que[MS];
+int fr = 0, re = 0;
+
+void enqueue(Heap data) {
+    que[re++] = data;
+
+    if (fr < re) {
+        for (int i = fr + 1; i <= re; ++i) {
+            if (que[i].cost < que[i - 1].cost)
+                swap(que[i], que[i - 1]);
+        }
+    }
+    return;
+}
+
+Heap dequeue(void) {
+    return que[fr++];
+}
+
+vector<Node> graph[MS]; // ê° ë…¸ë“œì— ì—°ê²°ë˜ì–´ ìˆëŠ” ë…¸ë“œì— ëŒ€í•œ ì •ë³´ë¥¼ ë‹´ëŠ” ë²¡í„°
+int dist[MS]; // ìµœë‹¨ ê±°ë¦¬ í…Œì´ë¸” ë§Œë“¤ê¸°
+
+//ìµœëŒ“ê°’ ë°˜í™˜
 int Max(int a, int b) {
     return a > b ? a : b;
 }
 
 void dijkstra(int start) {
-    priority_queue<pair<int, int> > pq;
-  
-    pq.push({ 0, start });
+    enqueue({ start, 0 });
     dist[start] = 0;
 
-    while (!pq.empty()) { // Å¥°¡ ºñ¾îÀÖÁö ¾Ê´Ù¸é
-        // °¡Àå ÃÖ´Ü °Å¸®°¡ ÂªÀº ³ëµå¿¡ ´ëÇÑ Á¤º¸ ²¨³»±â
-        int cost = -pq.top().first; // ÇöÀç ³ëµå±îÁöÀÇ ºñ¿ë 
-        int now = pq.top().second; // ÇöÀç ³ëµå
-        pq.pop();
+    while (fr < re) {
+        Heap cur = dequeue();
 
-        // ÇöÀç ³ëµå°¡ ÀÌ¹Ì Ã³¸®µÈ ÀûÀÌ ÀÖ´Â ³ëµå¶ó¸é ¹«½Ã
-        if (dist[now] < cost) 
+        // í˜„ì¬ ë…¸ë“œê°€ ì´ë¯¸ ì²˜ë¦¬ëœ ì ì´ ìˆëŠ” ë…¸ë“œë¼ë©´ ë¬´ì‹œ
+        if (dist[cur.cur] < cur.cost)
             continue;
 
-        // ÇöÀç ³ëµå¿Í ¿¬°áµÈ ´Ù¸¥ ÀÎÁ¢ÇÑ ³ëµåµéÀ» È®ÀÎ
-        for (int i = 0; i < graph[now].size(); i++) {
-            int ncost = cost + graph[now][i].second;
+        // í˜„ì¬ ë…¸ë“œì™€ ì—°ê²°ëœ ë‹¤ë¥¸ ì¸ì ‘í•œ ë…¸ë“œë“¤ì„ í™•ì¸
+        for (Node& next : graph[cur.cur]) {
+            int ncost = cur.cost + next.cost;
 
-            // ÇöÀç ³ëµå¸¦ °ÅÃÄ¼­, ´Ù¸¥ ³ëµå·Î ÀÌµ¿ÇÏ´Â °Å¸®°¡ ´õ ÂªÀº °æ¿ì
-            if (ncost < dist[graph[now][i].first]) {
-                dist[graph[now][i].first] = ncost;
-                pq.push(make_pair(-ncost, graph[now][i].first));
+            // í˜„ì¬ ë…¸ë“œë¥¼ ê±°ì³ì„œ, ë‹¤ë¥¸ ë…¸ë“œë¡œ ì´ë™í•˜ëŠ” ê±°ë¦¬ê°€ ë” ì§§ì€ ê²½ìš°
+            if (ncost < dist[next.target]) {
+                dist[next.target] = ncost;
+                enqueue({ next.target, ncost });
             }
         }
     }
+
+    return;
 }
 
 pair<int, int> solution(int n, int m, int start) {
     pair<int, int> answer;
-    dist.resize(MS, INF); //°Å¸®Å×ÀÌºí ÃÊ±âÈ­
+    for (int i = 1; i <= n; ++i)
+        dist[i] = INF;
 
-    dijkstra(start); //´ÙÀÍ½ºÆ®¶ó 
-                     
-                   
+    dijkstra(start); //ë‹¤ìµìŠ¤íŠ¸ë¼
+
     int cnt = 0;
-    // µµ´ŞÇÒ ¼ö ÀÖ´Â ³ëµå Áß¿¡¼­, °¡Àå ¸Ö¸® ÀÖ´Â ³ëµå¿ÍÀÇ ÃÖ´Ü °Å¸®
+    // ë„ë‹¬í•  ìˆ˜ ìˆëŠ” ë…¸ë“œ ì¤‘ì—ì„œ, ê°€ì¥ ë©€ë¦¬ ìˆëŠ” ë…¸ë“œì™€ì˜ ìµœë‹¨ ê±°ë¦¬
     int max_dist = 0;
-    for (int i = 1; i <= n; i++) {
-        // µµ´ŞÇÒ ¼ö ÀÖ´Â ³ëµåÀÎ °æ¿ì
+
+    for (int i = 1; i <= n; ++i) {
         if (dist[i] != INF) {
             cnt++;
             max_dist = Max(max_dist, dist[i]);
@@ -67,15 +92,15 @@ pair<int, int> solution(int n, int m, int start) {
 }
 
 int main(void) {
-    // ³ëµåÀÇ °³¼ö(N), °£¼±ÀÇ °³¼ö(M), ½ÃÀÛ ³ëµå ¹øÈ£(Start)
+    // ë…¸ë“œì˜ ê°œìˆ˜(N), ê°„ì„ ì˜ ê°œìˆ˜(M), ì‹œì‘ ë…¸ë“œ ë²ˆí˜¸(Start)
     int n, m, start;
     cin >> n >> m >> start;
 
-    // ¸ğµç °£¼± Á¤º¸¸¦ ÀÔ·Â¹Ş±â
+    // ëª¨ë“  ê°„ì„  ì •ë³´ë¥¼ ì…ë ¥ë°›ê¸°
     for (int i = 0; i < m; i++) {
         int x, y, z;
         cin >> x >> y >> z;
-        // X¹ø ³ëµå¿¡¼­ Y¹ø ³ëµå·Î °¡´Â ºñ¿ëÀÌ Z¶ó´Â ÀÇ¹Ì
+        // Xë²ˆ ë…¸ë“œì—ì„œ Yë²ˆ ë…¸ë“œë¡œ ê°€ëŠ” ë¹„ìš©ì´ Zë¼ëŠ” ì˜ë¯¸
         graph[x].push_back({ y, z });
     }
 
