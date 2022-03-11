@@ -1,30 +1,30 @@
 #include <iostream>
 #include <vector>
-#define MS 100001 //ÃÖ´ë±æÀÌ
-#define INF 1e9 //ÃÖ´ñ°ª
+#define MS 100001 //ìµœëŒ€ê¸¸ì´
+#define INF 1e9 //ìµœëŒ“ê°’
 
 using namespace std;
 
 typedef struct {
-	int next, cost;
+	int target, cost;
 } Node;
 
-// ³ëµåÀÇ °³¼ö(N), °£¼±ÀÇ °³¼ö(M), ½ÃÀÛ ³ëµå ¹øÈ£(Start)
-// ³ëµåÀÇ °³¼ö´Â ÃÖ´ë 100,000°³¶ó°í °¡Á¤
+// ë…¸ë“œì˜ ê°œìˆ˜(N), ê°„ì„ ì˜ ê°œìˆ˜(M), ì‹œì‘ ë…¸ë“œ ë²ˆí˜¸(Start)
+// ë…¸ë“œì˜ ê°œìˆ˜ëŠ” ìµœëŒ€ 100,000ê°œë¼ê³  ê°€ì •
 
-//°¢ ³ëµå¿¡ ´ëÇÑ Á¤º¸¸¦ ´ã´Â ¹è¿­
+//ê° ë…¸ë“œì— ëŒ€í•œ ì •ë³´ë¥¼ ë‹´ëŠ” ë°°ì—´
 vector<Node> adj[MS];
-int visited[MS] = { 0, }; //¹æ¹®¸®½ºÆ®
-vector<int> dist; //°Å¸®¸®½ºÆ®
+int visited[MS] = { 0, }; //ë°©ë¬¸ë¦¬ìŠ¤íŠ¸
+vector<int> dist; //ê±°ë¦¬ë¦¬ìŠ¤íŠ¸
 
-// ¹æ¹®ÇÏÁö ¾ÊÀº ³ëµå Áß¿¡¼­, °¡Àå ÃÖ´Ü °Å¸®°¡ ÂªÀº ³ëµåÀÇ ¹øÈ£¸¦ ¹İÈ¯
-int get_Smallest_Node(int n) {
+// ë°©ë¬¸í•˜ì§€ ì•Šì€ ë…¸ë“œ ì¤‘ì—ì„œ, ê°€ì¥ ìµœë‹¨ ê±°ë¦¬ê°€ ì§§ì€ ë…¸ë“œì˜ ë²ˆí˜¸ë¥¼ ë°˜í™˜
+int get_Shortest_Node(int n) {
 	int min_value = INF;
-	int idx = 0; //°¡Àå ÃÖ´Ü°Å¸®°¡ ÂªÀº ³ëµåÀÇ idx
+	int idx = 0; //ê°€ì¥ ìµœë‹¨ ê±°ë¦¬ê°€ ì§§ì€ ë…¸ë“œ idx
 
 	for (int i = 1; i <= n; ++i) {
-		//ÂªÀº °Å¸® ³ëµå ¹ß°ßÇÏ°í ¹Ì¹æ¹®ÀÌ¸é
-		if (dist[i] < min_value && visited[i] == 0) {
+		//ë¯¸ë°©ë¬¸ì´ê³  ì§§ì€ ê±°ë¦¬ë¥¼ ê°€ì§„ ë…¸ë“œì´ë©´
+		if (visited[i] == 0 && dist[i] < min_value) {
 			min_value = dist[i];
 			idx = i;
 		}
@@ -33,41 +33,42 @@ int get_Smallest_Node(int n) {
 	return idx;
 }
 
-//´ÙÀÍ½ºÆ®¶ó ¾Ë°í¸®Áò
+//ë‹¤ìµìŠ¤íŠ¸ë¼ ì•Œê³ ë¦¬ì¦˜ - > ì—¬ëŸ¬ ê°œì˜ ë…¸ë“œê°€ ìˆì„ ë•Œ íŠ¹ì • ë…¸ë“œ ì¶œë°œì—ì„œ ê° ë…¸ë“œì˜ ìµœë‹¨ê²½ë¡œë¥¼ êµ¬í•´ì¤Œ
 void dijkstra(int n, int m, int start) {
+	//ì‹œì‘ ë…¸ë“œ
 	dist[start] = 0;
 	visited[start] = 1;
 
-	for (auto& node : adj[start]) 
-		dist[node.next] = node.cost;
+	//ìŠ¤íƒ€íŠ¸ì— ì—°ê²°ëœ ë…¸ë“œì˜ ê±°ë¦¬ ë¦¬ìŠ¤íŠ¸ì— ê±°ë¦¬ ë¹„ìš©ì„ ë„£ì–´ì¤Œ
+	for (Node& next : adj[start]) 
+		dist[next.target] = next.cost;
 	
-	//n-1°³ÀÇ ³ëµå¿¡ ´ëÇØ ¹İº¹
+	//n - 1ë°˜ë³µ
 	for (int i = 0; i < n - 1; ++i) {
-		// ÇöÀç ÃÖ´Ü °Å¸®°¡ °¡Àå ÂªÀº ³ëµå¸¦ ²¨³»¼­, ¹æ¹® Ã³¸®
-		int cur = get_Smallest_Node(n);
+		//í˜„ì¬ ìµœë‹¨ ê±°ë¦¬ê°€ ê°€ì¥ ì§§ì€ ë…¸ë“œë¥¼ êº¼ë‚´ì„œ, ë°©ë¬¸ì²˜ë¦¬
+		int cur = get_Shortest_Node(n);
 		visited[cur] = 1;
 
-		// ÇöÀç ³ëµå¿Í ¿¬°áµÈ ´Ù¸¥ ³ëµå¸¦ È®ÀÎ
-		for (auto& node : adj[cur]) {
-			int ncost = dist[cur] + node.cost;
+		//ë‹¤ì‹œ ë°˜ë³µ
+		for (Node& next : adj[cur]) {
+			int ncost = dist[cur] + next.cost;
 
-			// ÇöÀç ³ëµå¸¦ °ÅÃÄ¼­ ´Ù¸¥ ³ëµå·Î ÀÌµ¿ÇÏ´Â °Å¸®°¡ ´õ ÂªÀº °æ¿ì
-			if (ncost < dist[node.next]) 
-				dist[node.next] = ncost;
+			//í˜„ì¬ ë…¸ë“œë¥¼ ê±°ì³ì„œ ë‹¤ë¥¸ ë…¸ë“œë¡œ ì´ë™í•˜ëŠ” ê±°ë¦¬
+			if (ncost < dist[next.target])
+				dist[next.target] = ncost;
 		}
 	}
-
 	return;
 }
 
 void print_answer(int n) {
-	// ¸ğµç ³ëµå·Î °¡±â À§ÇÑ ÃÖ´Ü °Å¸®¸¦ Ãâ·Â
+	// ëª¨ë“  ë…¸ë“œë¡œ ê°€ê¸° ìœ„í•œ ìµœë‹¨ ê±°ë¦¬ë¥¼ ì¶œë ¥
 	for (int i = 1; i <= n; i++) {
-		// µµ´ŞÇÒ ¼ö ¾ø´Â °æ¿ì, ¹«ÇÑ(INFINITY)ÀÌ¶ó°í Ãâ·Â
+		// ë„ë‹¬í•  ìˆ˜ ì—†ëŠ” ê²½ìš°, ë¬´í•œ(INFINITY)ì´ë¼ê³  ì¶œë ¥
 		if (dist[i] == INF) 
 			cout << "INFINITY" << '\n';
 		
-		// µµ´ŞÇÒ ¼ö ÀÖ´Â °æ¿ì °Å¸®¸¦ Ãâ·Â
+		// ë„ë‹¬í•  ìˆ˜ ìˆëŠ” ê²½ìš° ê±°ë¦¬ë¥¼ ì¶œë ¥
 		else 
 			cout << dist[i] << '\n';
 		
@@ -76,15 +77,15 @@ void print_answer(int n) {
 }
 
 void solution(int n, int m, int start) {
-	dist.resize(MS, INF); // ÃÖ´Ü °Å¸® Å×ÀÌºíÀ» ¸ğµÎ ¹«ÇÑÀ¸·Î ÃÊ±âÈ­
+	dist.resize(MS, INF); // ìµœë‹¨ ê±°ë¦¬ í…Œì´ë¸”ì„ ëª¨ë‘ ë¬´í•œìœ¼ë¡œ ì´ˆê¸°í™”
 
-	//´ÙÀÍ½ºÆ®¶ó ¾Ë°í¸®ÁòÀ» ¼öÇà
+	//ë‹¤ìµìŠ¤íŠ¸ë¼ ì•Œê³ ë¦¬ì¦˜ì„ ìˆ˜í–‰
 	dijkstra(n, m, start);
 	return;
 }
 
 int main(void) {
-	//ÃÊ±âÈ­
+	//ì´ˆê¸°í™”
 	ios::sync_with_stdio(0);
 	cin.tie(0);
 	cout.tie(0);
@@ -96,7 +97,7 @@ int main(void) {
 	for (int i = 0; i < m; ++i) {
 		cin >> a >> b >> c;
 		
-		// a¹ø ³ëµå¿¡¼­ b¹ø ³ëµå·Î °¡´Â ºñ¿ëÀÌ c¶ó´Â ÀÇ¹Ì
+		// aë²ˆ ë…¸ë“œì—ì„œ bë²ˆ ë…¸ë“œë¡œ ê°€ëŠ” ë¹„ìš©ì´ cë¼ëŠ” ì˜ë¯¸
 		adj[a].push_back({ b,c });
 	}
 
