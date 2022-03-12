@@ -4,19 +4,17 @@
 using namespace std;
 
 int solution(int n, int* coins) {
-	int answer = 0;
-	int target = 1; //1·Î ½ÃÀÛ
+	int answer = 1; //1ë¡œ ì…‹íŒ…
 
-	sort(coins, coins + n); //¿À¸§ Â÷¼ø Á¤·Ä
+	sort(coins, coins + n); //ì˜¤ë¦„ì°¨ìˆœ ì •ë ¬
 
 	for (int i = 0; i < n; ++i) {
-		//ÀÛÀº °æ¿ì´Â ³ª¿Ã ¼ö ¾ø´Â ±Ý¾×
-		if (target < coins[i])
+		//ìž‘ì€ ê¸ˆì•¡ì€ ë§Œë“¤ìˆ˜ê°€ ì—†ìŒ
+		if (answer < coins[i])
 			break;
-		target += coins[i];
+		answer += coins[i];
 	}
 	
-	answer = target;
 	return answer;
 }
 
