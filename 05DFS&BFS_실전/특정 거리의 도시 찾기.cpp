@@ -1,61 +1,82 @@
 #include <iostream>
 #include <vector>
-#include <queue>
+#define MS 300001 //ÏµúÎåÄ Í∏∏Ïù¥
+
 using namespace std;
 
-int n, m, k, x;
-vector<vector<int>> graph;
-vector<int> dist;
-vector<int> result;
+typedef struct {
+	int idx, dist;
+}Node;
 
-void BFS(int start) {
-	queue<int> q;
-	dist[start] = 0;
-	q.push(start);
+Node que[MS];
+int fr = 0, re = 0;
+vector<int> graph[MS];
 
-	while (!q.empty()) {
-		int cur = q.front();
-		q.pop();
-
-		for (int i = 0; i < graph[cur].size(); i++) {
-			int next = graph[cur][i];
-			if (dist[next] == -1) {
-				dist[next] = dist[cur] + 1;
-				q.push(next);
-			}
-		}
-	}
-	//dist¿« ∞≈∏Æ ¡§∫∏∏¶ resultø° ¥„¿Ω
-	for (int i = 1; i <= n; i++) {
-		if (dist[i] == k)
-			result.push_back(i);
-	}
+void enqueue(Node data) {
+	que[re++] = data;
 	return;
 }
 
+Node dequeue(void) {
+	return que[fr++];
+}
+
+//ÎÑàÎπÑÏö∞ÏÑ† ÌÉêÏÉâ
+void BFS(int n, int x, vector<int>& dist) {
+	enqueue({ x, 0 });
+	dist[x] = 1;
+
+	while (fr < re) {
+		Node cur = dequeue();
+
+		for (int& next : graph[cur.idx]) {
+			//Ïû¨Î∞©Î¨∏ Î∞©ÏßÄ
+			if (dist[next] != 0)
+				continue;
+
+			dist[next] = cur.dist + 1;
+			enqueue({ next, cur.dist + 1 });
+		}
+	}
+
+	return;
+}
+
+void solution(int n, int m, int k, int x) {
+	int flag = 0;
+
+	vector<int> dist(n + 1, 0); //Í±∞Î¶¨Î¶¨Ïä§Ìä∏
+	BFS(n, x, dist);
+
+	for (int i = 1; i <= n; ++i) {
+		//ÏûêÍ∏∞ ÏûêÏã† Ï†úÏô∏
+		if (i == x)
+			continue;
+
+		if (dist[i] == k) {
+			cout << i << '\n';
+			flag = 1;
+		}
+	}
+
+	if (flag == 0)
+		cout << "-1";
+	return;
+}
 int main(void) {
-	//√ ±‚»≠
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
+	int n, m, k, x;
 
-	//±◊∑°«¡ ª˝º∫
 	cin >> n >> m >> k >> x;
-	graph = vector<vector<int>> (n + 1);
-	dist = vector<int>(n + 1, -1);
 
-	for (int i = 0; i < m; i++) {
-		int from, to;
-		cin >> from >> to;
-		graph[from].push_back(to);
+	for (int i = 0; i < m; ++i) {
+		int a, b;
+		cin >> a >> b;
+		graph[a].push_back(b);
+		/*if (graph[a].size() > 1)
+			sort(graph[a].begin(), graph[a].end());*/
 	}
-	//BFSΩ««‡
-	BFS(x);
-	
-	if (result.size() != 0) {
-		for (int i = 0; i < result.size(); i++)
-			cout << result[i] << '\n';
-	}
-	else cout << -1 << '\n';
+
+	solution(n, m, k, x);
+
 	return 0;
 }
