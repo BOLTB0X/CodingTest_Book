@@ -4,17 +4,17 @@ using namespace std;
 
 int solution(int n, int m, int* balls) {
 	int answer = 0;
+	int tmp = n; //ìž„ì‹œ
 	int cnt[11] = { 0, };
 
-	//ÇØ´ç º¼ Ä«¿îÆ®
+	//ë²ˆí˜¸ë³„ ì¹´ìš´íŠ¸
 	for (int i = 0; i < n; ++i) 
 		cnt[balls[i]]++;
 	
 	for (int i = 1; i <= m; ++i) {
-		n -= cnt[i];
-		answer += (cnt[i] * n);
+		tmp -= cnt[i];
+		answer += (tmp * cnt[i]);
 	}
-
 	return answer;
 }
 
