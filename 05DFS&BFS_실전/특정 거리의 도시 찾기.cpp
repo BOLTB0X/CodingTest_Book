@@ -4,38 +4,34 @@
 
 using namespace std;
 
-typedef struct {
-	int idx, dist;
-}Node;
-
-Node que[MS];
+int que[MS];
 int fr = 0, re = 0;
 vector<int> graph[MS];
 
-void enqueue(Node data) {
+void enqueue(int data) {
 	que[re++] = data;
 	return;
 }
 
-Node dequeue(void) {
+int dequeue(void) {
 	return que[fr++];
 }
 
 //너비우선 탐색
 void BFS(int n, int x, vector<int>& dist) {
-	enqueue({ x, 0 });
+	enqueue(x);
 	dist[x] = 1;
 
 	while (fr < re) {
-		Node cur = dequeue();
+		int cur = dequeue();
 
-		for (int& next : graph[cur.idx]) {
+		for (int& next : graph[cur]) {
 			//재방문 방지
 			if (dist[next] != 0)
 				continue;
 
-			dist[next] = cur.dist + 1;
-			enqueue({ next, cur.dist + 1 });
+			dist[next] = dist[cur] + 1;
+			enqueue(next);
 		}
 	}
 
@@ -53,7 +49,7 @@ void solution(int n, int m, int k, int x) {
 		if (i == x)
 			continue;
 
-		if (dist[i] == k) {
+		if (dist[i] - 1 == k) {
 			cout << i << '\n';
 			flag = 1;
 		}
