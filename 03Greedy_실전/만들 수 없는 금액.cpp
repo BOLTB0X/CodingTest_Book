@@ -12,6 +12,7 @@ int solution(int n, int* coins) {
 		//작은 금액은 만들수가 없음
 		if (answer < coins[i])
 			break;
+		//그 외
 		answer += coins[i];
 	}
 	
