@@ -1,60 +1,84 @@
 #include <iostream>
-#include <queue>
 #include <vector>
 #include <algorithm>
+
 using namespace std;
 
-struct inf {
-	int r, c, sec, vrius_idx;
-};
+typedef struct {
+	int y, x, sec, idx;
+} Virus; //ë°”ì´ëŸ¬ìŠ¤
 
-int n, k;
-int s, x, y; //x->row, y->col;
-int map[201][201] = { 0, };
-queue<inf> q;
-const int dr[4] = { -1,1,0,0 };
-const int dc[4] = { 0,0,-1,1 };
+Virus que[200001];
+int fr = 0, re = 0;
 
-//¹ÙÀÌ·¯½º ¼ø¹øÀ¸·Î ¿À¸§Â÷¼ø
-bool compare(inf a, inf b) {
-	return a.vrius_idx < b.vrius_idx;
+void enqueue(Virus data) {
+	que[re++] = data;
+	return;
 }
 
-//¹üÀ§ Ã¼Å©
-bool is_range(int row, int col) {
-	if (row < 1 || col < 1 || row >n || col >n)
-		return false;
-	return true;
+Virus dequeue(void) {
+	return que[fr++];
 }
 
-//BFS
-int BFS(int sec, int row, int col) {
-	while (!q.empty()) {
-		inf cur = q.front();
-		q.pop();
-		//½Ã°£ÀÌ ¸Â°Ô µÇ¸é Å»Ãâ
-		if (sec == cur.sec)
-			break;
-		for (int i = 0; i < 4; i++) {
-			int nr = cur.r + dr[i];
-			int nc = cur.c + dc[i];
+vector<vector<int>> board;
+const int dy[4] = { 1,-1,0,0 };
+const int dx[4] = { 0,0,1,-1 };
 
-			if (is_range(nr, nc)) {
-				//Àü¿°½ÃÅ³ °ø°£ÀÌ¸é
-				if (map[nr][nc] == 0) {
-					map[nr][nc] = cur.vrius_idx;
-					inf next;
-					next.r = nr;
-					next.c = nc;
-					next.sec = cur.sec + 1;
-					next.vrius_idx = cur.vrius_idx;
-					q.push(next);
-				}
+//ë¹„êµ
+int compare(Virus& a, Virus& b) {
+	return a.idx < b.idx;
+}
+
+//ë„ˆë¹„ìš°ì„ 
+void BFS(int n, int k, int s) {
+	while (fr < re) {
+		Virus cur = dequeue();
+
+		if (cur.sec == s)
+			return;
+
+		for (int dir = 0; dir < 4; ++dir) {
+			int ny = cur.y + dy[dir];
+			int nx = cur.x + dx[dir];
+
+			//ë²”ìœ„ ì´ˆê³¼
+			if (ny < 1 || nx < 1 || ny > n || nx > n)
+				continue;
+
+			//í™•ì‚° ê°€ëŠ¥ ë²”ìœ„ ë°œê²¬
+			if (board[ny][nx] == 0) {
+				board[ny][nx] = cur.idx;
+				enqueue({ ny, nx, cur.sec + 1, cur.idx });
 			}
 		}
-
 	}
-	return map[row][col];
+
+	return;
+}
+
+int solution(int n, int k, int s, int y, int x) {
+	int answer = 0;
+	vector<Virus> v; //ë°”ì´ëŸ¬ìŠ¤
+	
+	for (int i = 1; i <= n; ++i) {
+		for (int j = 1; j <= n; ++j)
+			if (board[i][j] != 0)
+				v.push_back({ i,j,0,board[i][j] });
+	}
+
+	//ë°”ì´ëŸ¬ìŠ¤ ë²ˆí˜¸ê°€ ë‚®ì€ ê²ƒë¶€í„° í™•ì‚° ëŒ
+	sort(v.begin(), v.end(), compare);
+
+	//íì— ì‚½ì…
+	for (Virus& t_v : v) 
+		enqueue(t_v);
+
+	BFS(n, k, s);
+
+	if (board[y][x] != 0)
+		answer = board[y][x];
+
+	return answer;
 }
 
 int main(void) {
@@ -62,25 +86,21 @@ int main(void) {
 	cin.tie(0);
 	cout.tie(0);
 
-	vector<inf> priority_v;
+	int n, k;
+	int s, y, x;
 
 	cin >> n >> k;
-	for (int i = 1; i <= n; i++) {
-		for (int j = 1; j <= n; j++) {
-			cin >> map[i][j];
-			if (map[i][j] != 0)
-				//À§Ä¡ ½Ã°£ ¹ÙÀÌ·¯½º Á¾·ù
-				priority_v.push_back({ i,j,0,map[i][j] });
-		}
+	board.resize(n + 1, vector<int>(n + 1, 0));
+	//ë§µ ìƒì„±
+	for (int i = 1; i <= n; ++i) {
+		for (int j = 1; j <= n; ++j)
+			cin >> board[i][j];
 	}
-	//¹ÙÀÌ·¯½º ¹øÈ£ Áß½ÉÀ¸·Î ¿À¸§Â÷¼ø
-	sort(priority_v.begin(), priority_v.end(), compare);
-	//Å¥¿¡ »ğÀÔ
-	for (int i = 0; i < priority_v.size(); i++)
-		q.push(priority_v[i]);
 
-	cin >> s >> x >> y;
-	int ret = BFS(s, x, y);
-	cout << ret << '\n';
+	cin >> s >> y >> x;
+
+	int ret = solution(n, k, s, y, x);
+	cout << ret;
+
 	return 0;
 }
