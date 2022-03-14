@@ -1,110 +1,115 @@
 #include <iostream>
+
 using namespace std;
 
-int n, m;
-int map[9][9];
-int tmp_map[9][9];
-int result = 0;
+int result = -1;
+int board[9][9];
+int tmp[9][9]; //ë°±ì—…ìš©
 
-const int dr[4] = { -1,1,0,0 };
-const int dc[4] = { 0,0,-1,1 };
+const int dy[4] = { 1,-1,0,0 };
+const int dx[4] = { 0,0,1,-1 };
 
-int max(int a, int b) {
+//ìµœëŒ“ê°’ ë°˜í™˜
+int Max(int a, int b) {
 	return a > b ? a : b;
 }
 
-//¹üÀ§ Ã¼Å©
-bool is_range(int row, int col) {
-	if (row <1 || col <1 || row >n || col >m)
-		return false;
-	return true;
-}
-
-//¹ÙÀÌ·¯½º È®»ê DFSÀÌ¿ë
-void DFS(int row, int col) {
-	for (int i = 0; i < 4; i++) {
-		int nr = row + dr[i];
-		int nc = col + dc[i];
-
-		if (is_range(nr, nc)) {
-			if (tmp_map[nr][nc] == 2 || tmp_map[nr][nc] == 1)
-				continue;
-			tmp_map[nr][nc] = 2;
-			DFS(nr, nc);
-		}
+//ë°±ì—…
+void backup(int n, int m) {
+	for (int i = 1; i <= n; ++i) {
+		for (int j = 1; j <= m; ++j)
+			tmp[i][j] = board[i][j];
 	}
+
 	return;
 }
 
-//Á¡¼ö µæÁ¡
-int get_score() {
-	int score = 0;
-	for (int r = 1; r <= n; r++) {
-		for (int c = 1; c <= m; c++) {
-			if (tmp_map[r][c] == 0) {
-				score++;
-			}
-		}
-	}
-	return score;
-}
+void DFS(int n, int m, int y, int x) {
+	for (int dir = 0; dir < 4; ++dir) {
+		int ny = y + dy[dir];
+		int nx = x + dx[dir];
 
-//¸Ê º¹»ç
-void copy_map(int(*from)[9], int(*to)[9]) {
-	for (int r = 1; r <= n; r++) {
-		for (int c = 1; c <= m; c++) {
-			to[r][c] = from[r][c];
-		}
+		//ë²”ìœ„ì´ˆê³¼
+		if (ny < 1 || nx < 1 || ny > n || nx > m)
+			continue;
+		
+		//ë²½ì´ê±°ë‚˜ ë°”ì´ëŸ¬ìŠ¤
+		if (tmp[ny][nx] == 1 || tmp[ny][nx] == 2)
+			continue;
+
+		tmp[ny][nx] = 2;
+		DFS(n, m, ny, nx);
 	}
+
 	return;
 }
 
-void make_wall(int cnt) {
+//ìµœëŒ€ ì•ˆì „ì˜ì—­
+int get_Safe_size(int n, int m) {
+	int cnt = 0;
+	for (int i = 1; i <= n; ++i) {
+		for (int j = 1; j <= m; ++j) {
+			if (tmp[i][j] == 0)
+				cnt++;
+		}
+	}
+
+	return cnt;
+}
+
+void make_wall(int n, int m, int cnt) {
 	if (cnt == 3) {
-		//¹ÙÀÌ·¯½º Ã£±â
-		copy_map(map, tmp_map);
-		for (int r = 1; r <= n; r++) {
-			for (int c = 1; c <= m; c++) {
-				if (tmp_map[r][c] == 2) {
-					//¹ÙÀÌ·¯½º È®»ê
-					DFS(r, c);
-				}
+		//ë°±ì—…
+		backup(n, m);
+
+		for (int i = 1; i <= n; ++i) {
+			for (int j = 1; j <= m; ++j) {
+				if (tmp[i][j] == 2)
+					DFS(n, m, i, j);
 			}
 		}
-		result = max(result, get_score());
+	
+		result = Max(result, get_Safe_size(n, m));
 		return;
 	}
-	for (int r = 1; r <= n; r++) {
-		for (int c = 1; c <= m; c++) {
-			//ºó°ø°£À» ¸¸´Ù¸é
-			//º® Áş°í ºÎ¼ö±â ¹İº¹
-			if (map[r][c] == 0) {
+
+	for (int i = 1; i <= n; ++i) {
+		for (int j = 1; j <= m; ++j) {
+			//ë²½ì„ ë°œê²¬ -> ë°±íŠ¸ë˜í‚¹
+			if (board[i][j] == 0) {
 				cnt++;
-				map[r][c] = 1;
-				make_wall(cnt);
+				board[i][j] = 1;
+				make_wall(n, m, cnt);
+				board[i][j] = 0;
 				cnt--;
-				map[r][c] = 0;
 			}
 		}
 	}
+
+	return;
+
+}
+
+int solution(int n, int m) {
+	int answer = 0;
+
+	make_wall(n, m, 0);
+	answer = result;
+	return answer;
 }
 
 int main(void) {
-	//ÃÊ±âÈ­
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
+	int n, m;
 
-	//¸Ê »ı¼º
 	cin >> n >> m;
-	for (int i = 1; i <= n; i++) {
-		for (int j = 1; j <= m; j++) {
-			cin >> map[i][j];
-		}
-	}
-	//º® ¼¼¿ì°í ºÎ¼ö±â Àç±Í·Î ¹İº¹
-	make_wall(0);
 
-	cout << result << '\n';
+	for (int i = 1; i <= n; ++i) {
+		for (int j = 1; j <= m; ++j)
+			cin >> board[i][j];
+	}
+
+	int ret = solution(n, m);
+	cout << ret;
+
 	return 0;
 }
