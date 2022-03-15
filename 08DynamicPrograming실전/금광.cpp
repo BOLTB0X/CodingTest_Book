@@ -1,75 +1,77 @@
 #include <iostream>
+#include <vector>
+#define MS 300001 //최대 길이
 
 using namespace std;
 
-int board[21][21];
-int dp[21][21];
+int que[MS];
+int fr = 0, re = 0;
+vector<int> graph[MS];
 
-//최댓값
-int Max(int a, int b) {
-	return a > b ? a : b;
+void enqueue(int data) {
+	que[re++] = data;
+	return;
 }
 
-//다이나믹 프로그래밍
-int do_Dynaminc(int n, int m) {
-	int answer = 0;
+int dequeue(void) {
+	return que[fr++];
+}
 
-	//초기화
+//너비우선 탐색
+void BFS(int n, int x, vector<int>& dist) {
+	enqueue(x);
+	dist[x] = 1;
+
+	//비어질때까지
+	while (fr < re) {
+		int cur = dequeue();
+
+		for (int& next : graph[cur]) {
+			//재방문 방지
+			if (dist[next] != 0)
+				continue;
+
+			dist[next] = dist[cur] + 1;
+			enqueue(next);
+		}
+	}
+
+	return;
+}
+
+void solution(int n, int m, int k, int x) {
+	int flag = 0;
+
+	vector<int> dist(n + 1, 0); //거리리스트
+	BFS(n, x, dist);
+
 	for (int i = 1; i <= n; ++i) {
-		for (int j = 1; j <= m; ++j)
-			dp[i][j] = board[i][j];
-	}
+		//자기 자신 제외
+		if (i == x)
+			continue;
 
-	int move1, move2, move3; //오른 쪽 위, 오른쪽, 오른쪽 아래
-	
-	//보텀업
-	for (int i = 1; i <= m; ++i) {
-		for (int j = 1; j <= n; ++j) {
-			//오른쪽 위
-			if (j == 1)
-				move1 = 0;
-			else
-				move1 = dp[j - 1][i - 1];
-
-			//오른쪽 아래
-			if (j == n)
-				move3 = 0;
-			else
-				move3 = dp[j + 1][i - 1];
-			
-			//오른쪽
-			move2 = dp[j][i - 1];
-			//dp
-			dp[j][i] = dp[j][i] + Max(move1, Max(move2, move3));
+		if (dist[i] - 1 == k) {
+			cout << i << '\n';
+			flag = 1;
 		}
 	}
 
-	for (int i = 1; i <= n; ++i)
-		answer = Max(answer, dp[i][m]);
-
-	return answer;
+	if (flag == 0)
+		cout << "-1";
+	return;
 }
-
 int main(void) {
-	//초기화
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
+	int n, m, k, x;
 
-	int T;
-	cin >> T;
+	cin >> n >> m >> k >> x;
 
-	while (T--) {
-		int n, m;
-		cin >> n >> m;
-		
-		for (int i = 1; i <= n; ++i) {
-			for (int j = 1; j <= m; ++j)
-				cin >> board[i][j];
-		}
-		//다이나믹 
-		cout << do_Dynaminc(n, m) << '\n';
+	for (int i = 0; i < m; ++i) {
+		int a, b;
+		cin >> a >> b;
+		graph[a].push_back(b);
 	}
+
+	solution(n, m, k, x);
 
 	return 0;
 }
