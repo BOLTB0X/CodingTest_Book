@@ -1,14 +1,13 @@
 #include <iostream>
-#include <vector>
 #include <algorithm>
 
 using namespace std;
 
 typedef struct {
 	int y, x, sec, idx;
-} Virus; //바이러스
+} Virus;
 
-Virus que[200001];
+Virus que[40001];
 int fr = 0, re = 0;
 
 void enqueue(Virus data) {
@@ -20,11 +19,10 @@ Virus dequeue(void) {
 	return que[fr++];
 }
 
-vector<vector<int>> board;
+int board[201][201];
 const int dy[4] = { 1,-1,0,0 };
 const int dx[4] = { 0,0,1,-1 };
 
-//비교
 int compare(Virus& a, Virus& b) {
 	return a.idx < b.idx;
 }
@@ -41,14 +39,13 @@ void BFS(int n, int k, int s) {
 			int ny = cur.y + dy[dir];
 			int nx = cur.x + dx[dir];
 
-			//범위 초과
+			//범위초과
 			if (ny < 1 || nx < 1 || ny > n || nx > n)
 				continue;
 
-			//확산 가능 범위 발견
 			if (board[ny][nx] == 0) {
-				board[ny][nx] = cur.idx;
-				enqueue({ ny, nx, cur.sec + 1, cur.idx });
+				board[ny][nx] = cur.idx; //바이러스 표시
+				enqueue({ ny,nx, cur.sec + 1, cur.idx });
 			}
 		}
 	}
@@ -58,25 +55,25 @@ void BFS(int n, int k, int s) {
 
 int solution(int n, int k, int s, int y, int x) {
 	int answer = 0;
-	vector<Virus> v; //바이러스
-	
+	Virus* virus = new Virus[n * n + 1];
+	int v_idx = 0;
+
 	for (int i = 1; i <= n; ++i) {
-		for (int j = 1; j <= n; ++j)
+		for (int j = 1; j <= n; ++j) {
+			//바이러스 위치 
 			if (board[i][j] != 0)
-				v.push_back({ i,j,0,board[i][j] });
+				virus[v_idx++] = { i,j,0, board[i][j] };
+		}
 	}
 
-	//바이러스 번호가 낮은 것부터 확산 됌
-	sort(v.begin(), v.end(), compare);
-
+	sort(virus, virus + v_idx, compare); //작은 번호순으로 정렬
 	//큐에 삽입
-	for (Virus& t_v : v) 
-		enqueue(t_v);
-
+	for (int i = 0; i < v_idx; ++i) 
+		enqueue(virus[i]);
+	
 	BFS(n, k, s);
 
-	if (board[y][x] != 0)
-		answer = board[y][x];
+	answer = board[y][x] != 0 ? board[y][x] : 0;
 
 	return answer;
 }
@@ -90,10 +87,8 @@ int main(void) {
 	int s, y, x;
 
 	cin >> n >> k;
-	board.resize(n + 1, vector<int>(n + 1, 0));
-	//맵 생성
 	for (int i = 1; i <= n; ++i) {
-		for (int j = 1; j <= n; ++j)
+		for (int j = 1; j <= n; ++j) 
 			cin >> board[i][j];
 	}
 
