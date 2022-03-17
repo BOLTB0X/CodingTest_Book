@@ -1,41 +1,37 @@
 #include <iostream>
-#include <vector>
+
 using namespace std;
 
-int n, m;
-vector<int> arr;
-void solution (int n, int m, vector<int> arr) {
-    // ÇÑ ¹ø °è»êµÈ °á°ú¸¦ ÀúÀåÇÏ±â À§ÇÑ DP Å×ÀÌºí ÃÊ±âÈ­
-    vector<int> d(m + 1, 10001);
+int dp[10001] = { 0, };
+int coins[101];
 
-    // ´ÙÀÌ³ª¹Í ÇÁ·Î±×·¡¹Ö(Dynamic Programming) ÁøÇà(º¸ÅÒ¾÷)
-    d[0] = 0;
-    for (int i = 0; i < n; i++) {
-        for (int j = arr[i]; j <= m; j++) {
-            // (i - k)¿øÀ» ¸¸µå´Â ¹æ¹ıÀÌ Á¸ÀçÇÏ´Â °æ¿ì
-            if (d[j - arr[i]] != 10001) {
-                d[j] = min(d[j], d[j - arr[i]] + 1);
-            }
-        }
-    }
-
-    // °è»êµÈ °á°ú Ãâ·Â
-    if (d[m] == 10001) { // ÃÖÁ¾ÀûÀ¸·Î M¿øÀ» ¸¸µå´Â ¹æ¹ıÀÌ ¾ø´Â °æ¿ì
-        cout << -1 << '\n';
-    }
-    else {
-        cout << d[m] << '\n';
-    }
+int Min(int a, int b) {
+	return a < b ? a : b;
 }
 
 int main(void) {
-    cin >> n >> m;
+	int n, m;
 
-    for (int i = 0; i < n; i++) {
-        int value;
-        cin >> value;
-        arr.push_back(value);
-    }
-    solution(n, m, arr);
-    return 0;
+	cin >> n >> m;
+	for (int i = 1; i <= n; ++i) 
+		cin >> coins[i];
+
+	for (int i = 1; i <= m; ++i)
+		dp[i] = 10001; // ìµœëŒ“ê°’ìœ¼ë¡œ ì´ˆê¸°í™”
+	
+	//ë³´í…€ì—…
+	for (int i = 1; i <= n; ++i) {
+		int coin = coins[i]; // í•´ë‹¹ í™”í
+		for (int j = 1; j <= m; ++j) {
+			if (j - coin >= 0) // êµ¬ì„±ì´ ê°€ëŠ¥í•˜ë‹¤ë©´
+				dp[j] = Min(dp[j], dp[j - coin] + 1);
+		}
+	}
+	
+	if (dp[m] == 10001)
+		cout << "-1";
+	else
+		cout << dp[m];
+
+	return 0;
 }
