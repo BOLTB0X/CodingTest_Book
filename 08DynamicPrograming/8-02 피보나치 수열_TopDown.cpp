@@ -1,16 +1,18 @@
 #include <iostream>
 using namespace std;
 
-long long d[101]; //ÇÑ ¹ø °è»êµÈ °á°ú¸¦ ¸Þ¸ðÀÌÁ¦ÀÌ¼ÇÇÏ±â À§ÇÑ ¸®½ºÆ® ÃÊ±âÈ­
+long long dp[101]; //í•œ ë²ˆ ê³„ì‚°ëœ ê²°ê³¼ë¥¼ ë©”ëª¨ì´ì œì´ì…˜í•˜ê¸° ìœ„í•œ ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™”
 
 long long fibo(int x) {
-	//Á¾·á Á¶°Ç
-	if (x == 1 || x == 2) return 1;
-	//°è»êÇÑ Àû ÀÖ´Â ¹®Á¦¶ó¸é ±×´ë·Î ¸®ÅÏ
-	if (d[x] != 0) return d[x];
-	//°è»êÇÑ Àû ¾ø´Â ¹®Á¦¶ó¸é Á¡È­½Ä¿¡ µû¶ó ÇÇº¸³ªÄ¡ °á°ú ¹ÝÈ¯
-	d[x] = fibo(x - 1) + fibo(x - 2);
-	return d[x];
+	//ì¢…ë£Œ ì¡°ê±´
+	if (x == 1 || x == 2) 
+		return 1;
+	//ê³„ì‚°í•œ ì  ìžˆëŠ” ë¬¸ì œë¼ë©´ ê·¸ëŒ€ë¡œ ë¦¬í„´
+	if (dp[x] != 0) 
+		return dp[x];
+	//ê³„ì‚°í•œ ì  ì—†ëŠ” ë¬¸ì œë¼ë©´ ì í™”ì‹ì— ë”°ë¼ í”¼ë³´ë‚˜ì¹˜ ê²°ê³¼ ë°˜í™˜
+	dp[x] = fibo(x - 1) + fibo(x - 2);
+	return dp[x];
 }
 
 int main(void) {
