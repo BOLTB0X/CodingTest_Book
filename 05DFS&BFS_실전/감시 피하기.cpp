@@ -1,34 +1,24 @@
 #include <iostream>
 #include <vector>
-
 using namespace std;
-
-typedef struct {
-	int y, x;
-} Pair;
 
 int flag = 0;
 char board[7][7];
-vector<Pair> teachers;
-vector<Pair> space;
-
-//»óÇÏÁÂ¿ì
+//ìƒí•˜ì¢Œìš°
 const int dy[4] = { 1,-1,0,0 };
 const int dx[4] = { 0,0,-1,1 };
 
-//°¨½ÃµÇ´Â È®ÀÎ
+//ì²´í¬
 int check(int n, int y, int x) {
 	for (int dir = 0; dir < 4; ++dir) {
-		int ny = y;
-		int nx = x;
-
-		//¹üÀ§ ³»
+		int ny = y + dy[dir];
+		int nx = x + dx[dir];
+		
+		//ë²”ìœ„ ì•ˆì´ë©´ ë¬´í•œ ë°˜ë³µ
 		while (ny >= 1 && nx >= 1 && ny <= n && nx <= n) {
-			//º®À» º¸°ÔµÇ¸é ¸ØÃçµµ ‰Î
 			if (board[ny][nx] == 'O')
 				break;
-
-			//ÇĞ»ıÀ» º¸°Ô µÇ¸é
+			
 			if (board[ny][nx] == 'S')
 				return 0;
 
@@ -36,56 +26,47 @@ int check(int n, int y, int x) {
 			nx += dx[dir];
 		}
 	}
+
 	return 1;
 }
 
-//¹éÆ®·¡Å· ÀÌ¿ë
-void DFS(int n, int cur, int level) {
+void DFS(int n, vector<pair<int, int>>& s, vector<pair<int, int>>& t, int cur, int level) {
+	//ë‹µì´ ë‚˜ì˜¨ ê²½ìš°
 	if (flag == 1)
 		return;
-	//3±îÁöÀÌ´Ï
-	if (level == 3) {
-		//¼±»ı´Ô ¹æÇâ ±âÁØ¿¡¼­ ÇĞ»ıÀÌ ÀÖ´ÂÁö ¾ø´ÂÁö Ã¼Å©
-		for (Pair& t : teachers) {
-			if (check(n, t.y, t.x) == 0) {
-				return;
-			}
-		}
 
-		//¿©±â±îÁö ¿Â°Å¸é ´äÀÌ ³ª¿Â °Í
+	//íƒˆì¶œì¡°ê±´
+	if (level == 3) {
+		for (pair<int, int>& tmp_t : t) {
+			int y = tmp_t.first;
+			int x = tmp_t.second;
+
+			//í•˜ë‚˜ë„ ê°ì‹œë¥¼ ëª»í”¼í•˜ë©´
+			if (check(n, y, x) == 0)
+				return;
+		}
 		flag = 1;
 		return;
 	}
 
-	for (int s = cur; s < space.size(); ++s) {
-		int r = space[s].y;
-		int c = space[s].x;
+	//ì¤‘ë³µì¡°í•©êµ¬í•˜ë“¯ì´
+	for (int i = cur; i < s.size(); ++i) {
+		int row = s[i].first;
+		int col = s[i].second;
 
-		board[r][c] = 'O';
-		DFS(n, s + 1, level + 1);
-		board[r][c] = 'X';
+		board[row][col] = 'O';
+		DFS(n, s, t, i + 1, level + 1);
+		board[row][col] = 'X';
 	}
-
 	return;
 }
 
-//¼±»ı´Ô T, ÇĞ»ı S, Àå¾Ö¹° O
-string solution(int n) {
+string solution(int n, vector<pair<int, int>>& s, vector<pair<int, int>>& t) {
 	string answer;
 
-	for (int i = 1; i <= n; ++i) {
-		for (int j = 1; j <= n; ++j) {
-			//¼±»ı´Ô Ã£±â
-			if (board[i][j] == 'T')
-				teachers.push_back({ i,j });
+	//ë¨¼ì € DFSë¡œ ê³µê°„ì´ ë‚˜ì˜¬ ìˆ˜ ìˆëŠ” ì¤‘ë³µì¡°í•©ì„ êµ¬í•¨
+	DFS(n, s, t, 0, 0);
 
-			//ºó°ø°£
-			if (board[i][j] == 'X')
-				space.push_back({ i,j });
-		}
-	}
-
-	DFS(n, 0, 0);
 	answer = flag == 1 ? "YES" : "NO";
 	return answer;
 }
@@ -96,15 +77,25 @@ int main(void) {
 	cout.tie(0);
 
 	int n;
-	cin >> n;
+	vector<pair<int, int>> space;
+	vector<pair<int, int>> teacher;
 
+	cin >> n;
 	for (int i = 1; i <= n; ++i) {
-		for (int j = 1; j <= n; ++j)
+		for (int j = 1; j <= n; ++j) {
 			cin >> board[i][j];
+
+			//ì„ ìƒë‹˜ì¸ ê²½ìš°
+			if (board[i][j] == 'T')
+				teacher.push_back({ i,j });
+			//ë¹ˆ ê³µê°„
+			else if (board[i][j] == 'X')
+				space.push_back({ i,j });
+		}
 	}
 
-	string ret = solution(n);
+	//ì†”ë£¨ì…˜
+	string ret = solution(n, space, teacher);
 	cout << ret;
-
 	return 0;
 }
