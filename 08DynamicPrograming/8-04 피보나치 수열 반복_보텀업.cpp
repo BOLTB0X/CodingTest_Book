@@ -1,18 +1,18 @@
 #include <iostream>
 using namespace std;
 
-// ¾Õ¼­ °è»êµÈ °á°ú¸¦ ÀúÀåÇÏ±â À§ÇÑ DP Å×ÀÌºí ÃÊ±âÈ­
-long long d[100];
+// ì•žì„œ ê³„ì‚°ëœ ê²°ê³¼ë¥¼ ì €ìž¥í•˜ê¸° ìœ„í•œ DP í…Œì´ë¸” ì´ˆê¸°í™”
+long long dp[100];
 
 int main(void) {
-    // Ã¹ ¹øÂ° ÇÇº¸³ªÄ¡ ¼ö¿Í µÎ ¹øÂ° ÇÇº¸³ªÄ¡ ¼ö´Â 1
-    d[1] = 1;
-    d[2] = 1;
-    int n = 50; // 50¹øÂ° ÇÇº¸³ªÄ¡ ¼ö¸¦ °è»ê
+    // ì²« ë²ˆì§¸ í”¼ë³´ë‚˜ì¹˜ ìˆ˜ì™€ ë‘ ë²ˆì§¸ í”¼ë³´ë‚˜ì¹˜ ìˆ˜ëŠ” 1
+    dp[1] = 1;
+    dp[2] = 1;
+    int n = 50; // 50ë²ˆì§¸ í”¼ë³´ë‚˜ì¹˜ ìˆ˜ë¥¼ ê³„ì‚°
 
-    // ÇÇº¸³ªÄ¡ ÇÔ¼ö(Fibonacci Function) ¹Ýº¹¹®À¸·Î ±¸Çö(º¸ÅÒ¾÷ ´ÙÀÌ³ª¹Í ÇÁ·Î±×·¡¹Ö)
-    for (int i = 3; i <= n; i++) {
-        d[i] = d[i - 1] + d[i - 2];
-    }
+    // í”¼ë³´ë‚˜ì¹˜ í•¨ìˆ˜(Fibonacci Function) ë°˜ë³µë¬¸ìœ¼ë¡œ êµ¬í˜„(ë³´í…€ì—… ë‹¤ì´ë‚˜ë¯¹ í”„ë¡œê·¸ëž˜ë°)
+    for (int i = 3; i <= n; i++) 
+        dp[i] = dp[i - 1] + dp[i - 2];
+    
     cout << d[n] << '\n';
 }
