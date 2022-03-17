@@ -87,7 +87,6 @@ pair<int, int> solution(int n, int m, int start) {
 
     answer.first = cnt - 1;
     answer.second = max_dist;
-
     return answer;
 }
 
@@ -99,6 +98,7 @@ int main(void) {
     // 모든 간선 정보를 입력받기
     for (int i = 0; i < m; i++) {
         int x, y, z;
+
         cin >> x >> y >> z;
         // X번 노드에서 Y번 노드로 가는 비용이 Z라는 의미
         graph[x].push_back({ y, z });
