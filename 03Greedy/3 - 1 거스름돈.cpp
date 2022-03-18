@@ -1,24 +1,19 @@
 #include <iostream>
-#include <vector>
 
 using namespace std;
 
-int solution(int n) {
-	int answer = 0;
-
-	int types[4] = { 500, 100, 50, 10 };
-
-	for (int& type : types) {
-		answer += (n / type);
-		n %= type;
-	}
-
-	return answer;
-}
 int main(void) {
 	int n;
+	int coins[4] = { 500, 100, 50, 10 };
+
 	cin >> n;
-	int ret = solution(n);
-	cout << ret;
+
+	int cnt = 0;
+	for (int& coin : coins) {
+		cnt += (n / coin);
+		n %= coin;
+	}
+
+	cout << cnt;
 	return 0;
 }
