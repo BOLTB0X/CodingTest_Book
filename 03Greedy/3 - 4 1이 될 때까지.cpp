@@ -6,7 +6,7 @@ int solution(int n, int k) {
 	int answer = 0;
 
 	while (1) {
-		//1ÀÌ µÉ¶§±îÁö
+		//1ì´ ë ë–„ê¹Œì§€
 		int target = n / k;
 
 		if (target == 0)
