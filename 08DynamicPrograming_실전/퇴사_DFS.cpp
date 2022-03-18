@@ -2,53 +2,57 @@
 
 using namespace std;
 
-int result = -1;
-int day[16];
-int pay[16];
+int result;
 
-//ÃÖ´ñ°ª ¹İÈ¯
 int Max(int a, int b) {
 	return a > b ? a : b;
 }
 
-void DFS(int n, int cur_day, int tot, int add_pay) {
-	//¸¶Áö¸·³¯¿¡ µü µµÂøÇÑ °æ¿ì
-	if (cur_day == n + 1) {
+// ë°±íŠ¸ë˜í‚¹ 
+void DFS(int n, int* T, int* P, int level, int tot, int add_pay) {
+	// í‡´ì‚¬ë‚ ê¹Œì§€ ë„ë‹¬
+	if (level == n + 1) {
 		result = Max(result, tot);
 		return;
 	}
 
-	//ÃÊ°úÇÏ´Â °æ¿ì
-	else if (cur_day > n + 1) {
+	// ë„˜ê²¨ë²„ë¦¬ëŠ” ê²½ìš°
+	if (level > n + 1) {
 		result = Max(result, tot - add_pay);
 		return;
 	}
 
-	for (int i = cur_day; i <= n; ++i)
-		DFS(n, i + day[i], tot + pay[i], pay[i]);
+	for (int i = level; i <= n; ++i)
+		DFS(n, T, P, i + T[i], tot + P[i], P[i]);
+
 	return;
 }
 
-int solution(int n) {
-	int answer = 0;
 
-	DFS(n, 1, 0, 0);
+int solution(int n, int* T, int* P) {
+	int answer = 0;
+	result = -1;
+
+	//ë°±íŠ¸ë˜í‚¹ìœ¼ë¡œ í•˜ë‚˜ì”© ë‹¤ í•´ë´„
+	DFS(n, T, P, 1, 0, 0);
 	answer = result;
 	return answer;
 }
 
 int main(void) {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-
 	int n;
 	cin >> n;
 
+	int* T = new int[n + 1];
+	int* P = new int[n + 1];
+
 	for (int i = 1; i <= n; ++i) 
-		cin >> day[i] >> pay[i];
-	
-	int ret = solution(n);
+		cin >> T[i] >> P[i];
+
+	int ret = solution(n, T, P);
 	cout << ret;
+	
+	delete[] T;
+	delete[] P;
 	return 0;
 }
