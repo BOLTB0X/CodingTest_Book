@@ -1,47 +1,39 @@
 #include <iostream>
-#include <vector>
 #include <algorithm>
+#define MS 1000001 // ìµœëŒ€ ê¸¸ì´
+
 using namespace std;
 
-int n, k;
-vector<int> a, b;
+long long a[MS];
+long long b[MS];
 
-bool compare(int x, int y) {
-    return x > y;
+int compare(long long& a, long long& b) {
+	return a > b;
 }
 
 int main(void) {
-    // N°ú K¸¦ ÀÔ·Â¹Ş±â
-    cin >> n >> k;
-    // ¹è¿­ AÀÇ ¸ğµç ¿ø¼Ò¸¦ ÀÔ·Â¹Ş±â
-    for (int i = 0; i < n; i++) {
-        int x;
-        cin >> x;
-        a.push_back(x);
-    }
-    // ¹è¿­ BÀÇ ¸ğµç ¿ø¼Ò¸¦ ÀÔ·Â¹Ş±â
-    for (int i = 0; i < n; i++) {
-        int x;
-        cin >> x;
-        b.push_back(x);
-    }
-    // ¹è¿­ A´Â ¿À¸§Â÷¼ø Á¤·Ä ¼öÇà
-    sort(a.begin(), a.end());
-    // ¹è¿­ B´Â ³»¸²Â÷¼ø Á¤·Ä ¼öÇà
-    sort(b.begin(), b.end(), compare);
+	int n, k;
+	long long answer = 0; // ë‹µ
 
-    // Ã¹ ¹øÂ° ÀÎµ¦½ººÎÅÍ È®ÀÎÇÏ¸ç, µÎ ¹è¿­ÀÇ ¿ø¼Ò¸¦ ÃÖ´ë K¹ø ºñ±³ 
-    for (int i = 0; i < k; i++) {
-        // AÀÇ ¿ø¼Ò°¡ BÀÇ ¿ø¼Òº¸´Ù ÀÛÀº °æ¿ì
-        if (a[i] < b[i]) swap(a[i], b[i]); // µÎ ¿ø¼Ò¸¦ ±³Ã¼
-        // AÀÇ ¿ø¼Ò°¡ BÀÇ ¿ø¼Òº¸´Ù Å©°Å³ª °°À» ¶§, ¹İº¹¹®À» Å»Ãâ
-        else break;
-    }
+	cin >> n >> k;
+	for (int i = 0; i < n; ++i)
+		cin >> a[i];
+	for (int i = 0; i < n; ++i)
+		cin >> b[i];
 
-    // ¹è¿­ AÀÇ ¸ğµç ¿ø¼ÒÀÇ ÇÕÀ» Ãâ·Â
-    long long result = 0;
-    for (int i = 0; i < n; i++) {
-        result += a[i];
-    }
-    cout << result << '\n';
+	// a ê¸°ì¤€ì´ë¯€ë¡œ
+	sort(a, a + n); // ì˜¤ë¦„
+	sort(b, b + n, compare); // ë‚´ë¦¼
+
+	// aì™€ bì˜ ê¸¸ì´ëŠ” ê°™ìœ¼ë¯€ë¡œ bì˜ í° ê°’ë“¤ì„ ë”í•´ì¤Œ
+	for (int i = 0; i < n; ++i) {
+		// k ì´í•˜
+		if (i < k)
+			answer += b[i];
+		else
+			answer += a[i];
+	}
+
+	cout << answer;
+	return 0;
 }
