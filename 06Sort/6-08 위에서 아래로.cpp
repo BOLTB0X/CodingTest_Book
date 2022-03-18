@@ -1,30 +1,25 @@
 #include <iostream>
-#include <vector>
 #include <algorithm>
+
 using namespace std;
 
-int n;
-vector<int> v;
+int arr[500];
 
-bool compare(int a, int b) {
-    return a > b;
+int compare(int& a, int& b) {
+	return a > b;
 }
 
 int main(void) {
-    // N을 입력받기
-    cin >> n;
+	int n;
+	cin >> n;
 
-    // N개의 정수를 입력받아 리스트에 저장
-    for (int i = 0; i < n; i++) {
-        int x;
-        cin >> x;
-        v.push_back(x);
-    }
+	for (int i = 0; i < n; ++i)
+		cin >> arr[i];
 
-    // 기본 정렬 라이브러리를 이용하여 내림차순 정렬 수행
-    sort(v.begin(), v.end(), compare);
+	sort(arr, arr + n, compare);
 
-    for (int i = 0; i < n; i++) {
-        cout << v[i] << ' ';
-    }
+	for (int i = 0; i < n; ++i)
+		cout << arr[i] << ' ';
+
+	return 0;
 }
