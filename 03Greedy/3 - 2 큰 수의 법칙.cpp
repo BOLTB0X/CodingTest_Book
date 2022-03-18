@@ -1,11 +1,11 @@
 #include <iostream>
-#include <vector>
+#include <algorithm>
 
 using namespace std;
 
-//º´ÇÕ
-void merge(vector<int>& v, int start, int mid, int end) {
-	int* sorted = new int[end - start + 1]; //Á¤·Ä ¿ë
+//ë³‘í•©
+void merge(int* v, int start, int mid, int end) {
+	int* sorted = new int[end - start + 1]; //ì •ë ¬ ìš©
 	int i, j, k;
 
 	i = start, j = mid + 1, k = 0;
@@ -29,8 +29,8 @@ void merge(vector<int>& v, int start, int mid, int end) {
 	return;
 }
 
-//ÇÕº´Á¤·Ä
-void merge_Sort(vector<int>& v, int start, int end) {
+//í•©ë³‘ì •ë ¬
+void merge_Sort(int* v, int start, int end) {
 	if (start < end) {
 		int mid = (start + end) / 2;
 		merge_Sort(v, start, mid);
@@ -40,43 +40,36 @@ void merge_Sort(vector<int>& v, int start, int end) {
 	return;
 }
 
-int solution(int n, int m, int k, vector<int>& numbers) {
-	int answer = 0;
-
-	merge_Sort(numbers, 0, n - 1); //¿À¸§Â÷¼ø Á¤·Ä
-	int f_value = numbers[n - 1]; //ÃÖ´ñ°ª
-	int s_value = numbers[n - 2]; //2¹øÂ° °ª
-	int p_cnt = m;
-	while (1) {
-		//ÃÖ´ë ¿¬¼ÓÀ¸·Î k¹ø ´õÇÒ ¼ö ÀÖÀ¸¹Ç·Î
-		for (int i = 0; i < k; ++i) {
-			//Å»ÃâÁ¶°Ç
-			if (p_cnt == 0)
-				break;
-			answer += f_value;
-			p_cnt--;
-		}
-		//Å»Ãâ Á¶°Ç
-		if (p_cnt == 0)
-			break;
-		//µÎ¹øÂ° °ª
-		answer += s_value;
-		p_cnt--;
-	}
-	return answer;
-}
-
 int main(void) {
 	int n, m, k;
-	vector<int> numbers;
+	int numbers[1001];
+	int answer = 0;
 
 	cin >> n >> m >> k;
-	numbers.resize(n, 0);
-
 	for (int i = 0; i < n; ++i)
 		cin >> numbers[i];
 
-	int ret = solution(n, m, k, numbers);
-	cout << ret;
+	merge_Sort(numbers, 0, n - 1); //ì˜¤ë¦„ì°¨ìˆœ ì •ë ¬
+
+	int fir = numbers[n - 1];
+	int sec = numbers[n - 2];
+	int cnt = m;
+
+	while (1) {
+		for (int i = 0; i < k; ++i) {
+			if (cnt == 0)
+				break;
+			answer += fir;
+			cnt--;
+		}
+
+		if (cnt == 0)
+			break;
+
+		answer += sec;
+		cnt--;
+	}
+
+	cout << answer;
 	return 0;
 }
