@@ -4,51 +4,43 @@ using namespace std;
 int n;
 int arr[501];
 
-void quicksort(int* arr, int start, int end) {
-	//¿ø¼Ò°¡ 1°³ÀÎ °æ¿ì
+void quick_Sort(int* arr, int start, int end) {
+	// íƒˆì¶œ ì¡°ê±´
 	if (start >= end)
 		return;
-	int pivot = start; //ÇÇ¹şÀº Ã¹¹øÂ° ¿ø¼Ò
-	int left = start + 1;
-	int right = end;
-	int tmp;
-	//Æ÷ÀÎÅÍ°¡ ¾ù°¥¸±¶§±îÁö 
-	while (left <= right) {
-		//ÇÇ¹şº¸´Ù ÀÛÀº µ¥ÀÌÅÍ¸¦ Ã£À» ¶§±îÁö ¹İº¹
-		while (arr[left] >= arr[pivot]) 
-			left++;
-		while (right > start && arr[right] <= arr[pivot])
-			right--;
-		if (left > right) {
-			tmp = arr[right];
-			arr[right] = arr[pivot];
-			arr[pivot] = tmp;
-		}
-			
-		// ¾ù°¥¸®Áö ¾Ê¾Ò´Ù¸é ÀÛÀº µ¥ÀÌÅÍ¿Í Å« µ¥ÀÌÅÍ¸¦ ±³Ã¼
-		else {
-			tmp = arr[left];
-			arr[left] = arr[right];
-			arr[right] = tmp;
-		}
+
+	int pivot = start;
+	int i = start + 1, j = end;
+
+	while (i <= j) {
+		// í”¼ë²— ë³´ë‹¤ í° ê°’ì„ ë§Œë‚ ë•Œê¹Œì§€ ì´ë™
+		while (arr[i] >= arr[pivot])
+			i++;
+		while (j > start && arr[j] <= arr[pivot])
+			j--;
+
+		// ì—‡ê°ˆë ¸ë‹¤ë©´
+		if (i > j)
+			swap(arr[j], arr[pivot]);
+		else
+			swap(arr[i], arr[j]);
+
+		quick_Sort(arr, start, j - 1);
+		quick_Sort(arr, j + 1, end);
 	}
-	quicksort(arr, start, right - 1);
-	quicksort(arr, right + 1, end);
+
+	return;
 }
 
 int main(void) {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-
 	cin >> n;
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < n; i++) 
 		cin >> arr[i];
-	}
-	quicksort(arr, 0, n - 1);
 	
-	for (int i = 0; i < n; i++) {
+	quick_Sort(arr, 0, n - 1);
+	
+	for (int i = 0; i < n; i++) 
 		cout << arr[i] << ' ';
-	}
+	
 	return 0;
 }
