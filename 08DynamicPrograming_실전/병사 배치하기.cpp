@@ -3,39 +3,41 @@
 
 using namespace std;
 
-int arr[2001];
-int dp[2001];
+int arr[2000]; // ì…ë ¥ë°›ì„ ë°°ì—´
+int dp[2000]; // dp í…Œì´ë¸”
+
+int Max(int a, int b) {
+	return a > b ? a : b;
+}
 
 int solution(int n) {
 	int answer = 0;
-	int max_value = 0; // ÃÖ´ñ°ªÀ» À§ÇÑ
+	int max_len = 1;
+	// ê°€ì¥ ê¸´ ì¦ê°€ë¶€ë¶„ ìˆ˜ì—´ì„ ê°€ì ¸ì•¼ í•¨ -> LIS
+	// n - LISì´ ì—´ì™¸ëœ ê°œë¯¸ ìˆ«ì
 
-	reverse(arr, arr + n); // ³»¸²Â÷¼ø Á¤·Ä
-
-	//dp ÃÊ±âÈ­
-	for (int i = 0; i < n; ++i)
-		dp[i] = 1;
-
-	//LIS ±¸ÇØ¼­ n°ú »©ÁÖ¸é ‰Î
-	for (int i = 1; i < n; ++i) {
-		for (int j = 0; j < i; ++j) {
-			if (arr[j] < arr[i])
-				dp[i] = max(dp[i], dp[j] + 1);
-		}
-	}
-
-	//ÃÖ´ñ°ª Ã£±â
-	for (int i = 0; i < n; ++i) 
-		max_value = max(max_value, dp[i]);
+	reverse(arr, arr + n); // ë‚´ë¦¼ì°¨ìˆœ ì •ë ¬
 	
-	answer = n - max_value;
+	//LIS ì•Œê³ ë¦¬ì¦˜
+	dp[0] = 1;
+	for (int i = 1; i < n; ++i) {
+		dp[i] = 1;
+		for (int j = 0; j < i; ++j) {
+			// ê¸¸ì´ê°€ í¬ë‹¤ë©´
+			if (arr[i] > arr[j])
+				dp[i] = Max(dp[i], dp[j] + 1);
+		}
+		max_len = Max(max_len, dp[i]); // êµì²´
+	}
+		
+	answer = n - max_len;
 	return answer;
 }
 
 int main(void) {
 	int n;
-
 	cin >> n;
+
 	for (int i = 0; i < n; ++i)
 		cin >> arr[i];
 
