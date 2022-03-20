@@ -2,38 +2,30 @@
 
 using namespace std;
 
+int dp[30001] = { 0, }; // dp 테이블
+
 int Min(int a, int b) {
 	return a < b ? a : b;
 }
 
 int main(void) {
 	int n;
-
 	cin >> n;
-	//dp 테이블 생성
-	int* dp = new int[n + 1];
-	for (int i = 0; i <= n; ++i)
-		dp[i] = 0;
 
-	// dp[1] = 0
-	// dp[2] = 1
-	// dp[3] = 1
-	// dp[4] = 2
-	// 보텀업 방식으로 
-	//즉 먼저 dp[i] = dp[i-1] + 1 ->  -1 
-	// 5,3,2는 해당 i가 나눠 떨어지는지 체크
+	// 보텀업 방식
 	for (int i = 2; i <= n; ++i) {
-		dp[i] = dp[i - 1] + 1; // -1
-		
-		if (i % 5 == 0)
-			dp[i] = Min(dp[i / 5] + 1, dp[i]);
-		if (i % 3 == 0)
-			dp[i] = Min(dp[i / 3] + 1, dp[i]);
-		if (i % 2 == 0)
-			dp[i] = Min(dp[i / 2] + 1, dp[i]);
+		dp[i] = dp[i - 1] + 1; // -1한 것로 +1 카우트
+
+		if (i % 5 == 0) // 5로 나눠 떨어지면
+			dp[i] = Min(dp[i], dp[i / 5] + 1);
+
+		if (i % 3 == 0) // 3로 나눠 떨어지면
+			dp[i] = Min(dp[i], dp[i / 3] + 1);
+
+		if (i % 2 == 0) // 2로 나눠 떨어지면
+			dp[i] = Min(dp[i], dp[i / 2] + 1);
 	}
 
 	cout << dp[n] << '\n';
-	free(dp); //메모리 해제
 	return 0;
 }
