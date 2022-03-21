@@ -4,9 +4,9 @@ using namespace std;
 
 int day[16];
 int pay[16];
-int dp[16] = { 0, };
+int dp[16];
 
-//�ִ� ��ȯ
+//최댓값 반환
 int Max(int a, int b) {
 	return a > b ? a : b;
 }
@@ -14,15 +14,20 @@ int Max(int a, int b) {
 int solution(int n) {
 	int answer = 0;
 
-	dp[0] = 0;
+	// dp테이블 초기화
+	for (int i = 0; i <= n; ++i)
+		dp[i] = 0;
+
+	// 거꾸러
 	for (int i = n; i >= 0; --i) {
-		if (day[i] + i > n)
-			dp[i] = dp[i + 1];
+		if (i + day[i] <= n) {
+			dp[i] = Max(answer, dp[i + day[i]] + pay[i]);
+			answer = dp[i];
+		}
 		else
-			dp[i] = Max(dp[i + 1], pay[i] + dp[i + day[i]]);
+			dp[i] = answer;
 	}
-	
-	answer = dp[0];
+
 	return answer;
 }
 
