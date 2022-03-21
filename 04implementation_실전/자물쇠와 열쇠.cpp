@@ -3,73 +3,84 @@
 
 using namespace std;
 
-// 2Â÷¿ø ¸®½ºÆ® 90µµ È¸ÀüÇÏ±â
-vector<vector<int>> rotate_90(vector<vector<int>>& v) {
-    int n = v.size(); // Çà ±æÀÌ °è»ê
-    int m = v[0].size(); // ¿­ ±æÀÌ °è»ê
+vector<vector<int>> board; // í¸ì˜ìš©
 
-    vector<vector<int> > result(n, vector<int>(m)); // °á°ú ¸®½ºÆ®
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
+// ì‹œê³„ ë°©í–¥ìœ¼ë¡œ 90ë„ íšŒì „
+vector<vector<int>> rotate_90(vector<vector<int>>& v) {
+    int n = v.size();
+    int m = v[0].size();
+    vector<vector<int>> result(n, vector<int> (m));
+    
+    // ì •ë°©ì´ë¯€ë¡œ
+    for (int i = 0; i < n ;++i) {
+        for (int j = 0; j < m; ++j)
             result[i][j] = v[n - 1 - j][i];
-        }
     }
+    
     return result;
 }
 
-// ÀÚ¹°¼èÀÇ Áß°£ ºÎºĞÀÌ ¸ğµÎ 1ÀÎÁö È®ÀÎ
-int check(vector<vector<int>>& board) {
-    int n = board.size() / 3;
-
-    //°Ë»ç ½ÃÀÛ
-    for (int i = n; i < n * 2; i++) {
-        for (int j = n; j < n * 2; j++) {
-            //0À¸·Î ÇÏ¸é ¾ÈµÉ¼öµµ ÀÖÀ½
-            if (board[i][j] != 1) 
-                return 0;
+// ë§ëŠ”ì§€ ì²´í¬
+int check(int n) {
+    // 3ë°°ë¥¼ í‚¤ì› ìœ¼ë¯€ë¡œ
+    for (int i = n; i < n * 2; ++i) {
+        for (int j = n; j < n * 2; ++j) {
+            // ëŒê¸°ê°€ ì•„ë‹ì‹œ
+            if (board[i][j] != 1)
+                return 0; // ê±°ì§“
         }
     }
-
-    return 1;
+    return 1; // í™ˆì´ ì—†ìœ¼ë¯€ë¡œ
 }
 
-bool solution(vector<vector<int> > key, vector<vector<int> > lock) {
-    int n = lock.size();
-    int m = key.size();
-
-    // ÀÚ¹°¼èÀÇ Å©±â¸¦ ±âÁ¸ÀÇ 3¹è·Î º¯È¯ -> °¢ ¹üÀ§ÀÇ ÃÖ¼Ú°ªÀÌ 3
-    vector<vector<int> > board(n * 3, vector<int>(n * 3));
-
-    // »õ·Î¿î ÀÚ¹°¼èÀÇ Áß¾Ó ºÎºĞ¿¡ ±âÁ¸ÀÇ ÀÚ¹°¼è ³Ö±â
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) 
+bool solution(vector<vector<int>> key, vector<vector<int>> lock) {
+    bool answer = false;
+    // 0 í™ˆ, 1 ëŒê¸° 
+    int m = key.size(); // key ê¸¸ì´
+    int n = lock.size(); // ìë¬¼ì‡  ê¸¸ì´
+    
+    // ìë¬¼ì‡ ë¥¼ 3ë°°ë¥¼ í‚¤ì›Œì„œ ë§Œë“¬ -> mì˜ ìµœì†Ÿê°’ì´ 3ì´ë¯€ë¡œ
+    board.resize(n * 3, vector<int> (n * 3));
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j)
             board[i + n][j + n] = lock[i][j];
     }
-
-    // 90µµ¾¿ È¸Àü
+    
+    //ì´ì œ keyë¥¼ ì‹œê³„ë°©í–¥ 90ë„ë¡œ 4ë²ˆ íšŒì „í•˜ë©´ì„œ ë§ëŠ” ì§€ ì²´í¬
     for (int r = 0; r < 4; ++r) {
-        key = rotate_90(key); // ¿­¼è È¸Àü
+        key = rotate_90(key); // íšŒì „
+        
+        // keyê°€ ë“¤ì–´ê°€ë¯€ë¡œ 2ë°°
         for (int y = 0; y < n * 2; y++) {
             for (int x = 0; x < n * 2; x++) {
-
-                // ÀÚ¹°¼è¿¡ È¸ÀüÇÑ ¿­¼è¸¦ ³¢¿ö ³Ö±â
+                
+                // ìë¬¼ì‡ ì— íšŒì „í•œ ì—´ì‡ ë¥¼ ë¼ì›Œ ë„£ê¸°
                 for (int i = 0; i < m; i++) {
                     for (int j = 0; j < m; j++) 
                         board[y + i][x + j] += key[i][j];
                 }
-
-                // Á¤È®È÷ µé¾î ¸Â´ÂÁö °Ë»ç
-                if (check(board) == 1) 
-                    return true;
-
-                // ÀÚ¹°¼è¿¡¼­ ¿­¼è¸¦ ´Ù½Ã »©±â
+                
+                // ë§ëŠ” ì§€ ì²´í¬
+                if(check(n) == 1) {
+                    answer = true;
+                    break;
+                }
+                
+                // ìë¬¼ì‡ ì— íšŒì „í•œ ì—´ì‡ ë¥¼ ë¼ì›Œ ë„£ì€ê±° ë¹¼ê¸°
                 for (int i = 0; i < m; i++) {
                     for (int j = 0; j < m; j++) 
                         board[y + i][x + j] -= key[i][j];
                 }
             }
+            // ë‹µì´ ë‚˜ì™”ë‹¤ë©´
+            if (answer)
+                break;
         }
+        // ë‹µì´ ë‚˜ì™”ë‹¤ë©´
+        if (answer)
+            break;
     }
-
-    return false;
+    
+    // ë°˜í™˜
+    return answer;
 }
