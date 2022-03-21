@@ -3,77 +3,85 @@
 
 using namespace std;
 
-//¿Ã¹Ù¸¥ °ıÈ£ÀÎ°¡?
-int is_Correct(string s) {
-    int cnt = 0;
-    //stack<char> st; ±ÕÇüÀâÀÎ°Ô Á¶°ÇÀÌ¹Ç·Î ±ÕÇü¸¸ º¸¸é ‰Î
-    for (char& c : s) {
-        //¿ÀÇÂÀÌ¸é
-        if (c == '(')
+// ë¬¸ìì—´ ìª¼ê°œê¸°
+int split_String(string str) {
+    int idx = 0;
+    int size = str.length(); // ê¸¸ì´
+    int cnt = 0; // ì–´ì°¨í”¼ ê· í˜•ì´ ì¡í˜€ìˆì–´ ì˜¬ë°”ë¥¸ì§€ë§Œ ì²´í¬
+    
+    // í™•ì¸ ì‹œì‘
+    for (int i = 0; i < size; ++i) {
+        if (str[i] == '(') // ì—´ë¦°ì´ë©´
             cnt++;
-        else {
-            //Å¬·ÎÁî°í Å¾ÀÌ ¿ÀÇÂÀÏ°æ¿ì
+        
+        else  // ë‹«ìŒì´ë©´
+            cnt--;
+        
+        if (cnt == 0)
+            return i; // ì¸ë±ìŠ¤ ë°˜í™˜
+    }
+    
+    // ì™„ë²½í•œ ë¬¸ìì—´
+    return -1;
+}
+
+// ì˜¬ë°”ë¥¸ ì§€ ì²´í¬
+int is_Correct(string str) {
+    int size = str.length(); // ê¸¸ì´
+    int cnt = 0; // ê°¯ìˆ˜
+    
+     // í™•ì¸ ì‹œì‘
+    for (int i = 0; i < size; ++i) {
+        if (str[i] == '(') // ì—´ë¦°ì´ë©´
+            cnt++;
+        
+        else { // ë‹«ìŒì´ë©´
             if (cnt == 0)
-                return 0;
+                return 0; // ì¸ë±ìŠ¤ ë°˜í™˜ 
             cnt--;
         }
     }
-    //¿¡ÃÊ¿¡ ¹®ÀÚ¿­ÀÌ ±ÕÇüÀâÇôÀÖÀ½
-    //Âü ¹İÈ¯
+    // ì˜¬ë°”ë¥¸ ë¬¸ìì—´
     return 1;
-}
-
-//Æ¯Á¤ºÎºĞ ÀÎµ¦½º ¹İÈ¯
-int get_split_idx(string w) {
-    int cnt = 0;
-    int size = w.length();
-
-    for (int i = 0; i < size; ++i) {
-        if (w[i] == '(')
-            cnt++;
-        else
-            cnt--;
-
-        if (cnt == 0)
-            return i;
-    }
-    return -1;
 }
 
 string solution(string p) {
     string answer = "";
-    string u = "", v = "";
-
-    // 1¹ø
+    // ë¬¸ìì—´ì€ pëŠ” ê· í˜•ì¡íŒ ê´„í˜¸
+    
+    // 1ë²ˆ ì¡°ê±´
     if (p == "")
-        return "";
-
-    // 2¹ø
-    int idx = get_split_idx(p);
-    u = p.substr(0, idx + 1);
-    v = p.substr(idx + 1);
-
-    // 3¹ø
+        return p;
+    
+    // 2ë²ˆ ì¡°ê±´
+    int idx = split_String(p);
+    string u = p.substr(0, idx + 1); // ê· í˜•ì¡íŒ ê´„í˜¸ ë¬¸ìì—´
+    string v = p.substr(idx + 1);
+    
+    // 3ë²ˆ ì¡°ê±´
+    // ì˜¬ë°”ë¥¸ ë¬¸ìì—´ì¸ê°€?
     if (is_Correct(u) == 1)
-        answer = u + solution(v);
-    // 4¹ø
+        return u + solution(v); // ìˆ˜í–‰í•œ ê²°ê³¼ ë¬¸ìì—´ì„ uì— ì´ì–´ ë¶™ì¸ í›„ ë°˜í™˜
+    
+    // 4ë²ˆ
     else {
-        answer += "("; // 4 - 1
+        answer += "("; // 4 - 1 
         answer += solution(v); // 4 - 2
         answer += ")"; // 4 - 3
-
-        // 4 - 4
-        u = u.substr(1, u.size() - 2);
-
-        // 4 - 5
+        
+        u = u.substr(1, u.size() - 2); // 4 - 4
+        
+        // ë‚˜ë¨¸ì§€ ë¬¸ìì—´ì˜ ê´„í˜¸ ë°©í–¥ì„ ë’¤ì§‘ì–´ì„œ ë’¤ì— ë¶™ì…ë‹ˆë‹¤.
         for (int i = 0; i < u.size(); ++i) {
             if (u[i] == '(')
                 u[i] = ')';
             else
                 u[i] = '(';
         }
-        answer += u; // 4 - 5
+        
+        // 4 - 5
+        answer += u;
     }
-
+    
     return answer;
 }
