@@ -22,6 +22,7 @@ void BFS(int n, int x, vector<int>& dist) {
 	enqueue(x);
 	dist[x] = 1;
 
+	//비어질때까지
 	while (fr < re) {
 		int cur = dequeue();
 
@@ -42,13 +43,14 @@ void solution(int n, int m, int k, int x) {
 	int flag = 0;
 
 	vector<int> dist(n + 1, 0); //거리리스트
-	BFS(n, x, dist);
+	BFS(n, x, dist); // 너비우선 탐색
 
 	for (int i = 1; i <= n; ++i) {
 		//자기 자신 제외
 		if (i == x)
 			continue;
 
+		// k 거리를 갖는 도시
 		if (dist[i] - 1 == k) {
 			cout << i << '\n';
 			flag = 1;
@@ -68,8 +70,6 @@ int main(void) {
 		int a, b;
 		cin >> a >> b;
 		graph[a].push_back(b);
-		/*if (graph[a].size() > 1)
-			sort(graph[a].begin(), graph[a].end());*/
 	}
 
 	solution(n, m, k, x);
