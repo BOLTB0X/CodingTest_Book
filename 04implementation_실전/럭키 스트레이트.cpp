@@ -1,27 +1,32 @@
 #include <iostream>
 #include <string>
+
 using namespace std;
 
-int main() {
-	string st;
+string solution(string str) {
+	string answer = "READY";
 	int tot = 0;
+	int size = str.length();
 
-	cin >> st;
+	for (int i = 0; i < size / 2; ++i)
+		tot += (int)(str[i] - '0');
 	
-	//앞
-	for (int i = 0; i < st.length() / 2; i++) {
-		int num = st[i] - '0';
-		tot += num;
-	}
+	for (int i = size / 2; i < size; ++i)
+		tot -= (int)(str[i] - '0');
+
+	if (tot == 0)
+		answer = "LUCKY";
+
+	return answer;
+}
+
+int main() {
+	string str;
+
+	cin >> str;
+
+	string ret = solution(str);
+	cout << ret;
 	
-	//뒤
-	for (int i = st.length() / 2; i < st.length(); i++) {
-		int num = st[i] - '0';
-		tot -= num;
-	}
-	
-	if (tot == 0) 
-		cout << "LUCKY" << endl;
-	else 
-		cout << "READY" << endl;
+	return 0;
 }
