@@ -6,7 +6,7 @@ using namespace std;
 long long solution(string numbers) {
 	long long answer = 0;
 
-	// 문자열 차례로 확인
+	// 문자열 차례로 확인 -> 더할지 곱할지 결정
 	for (char& number : numbers) {
 		// 더하기
 		if (number - '0' <= 1 || answer <= 1)
@@ -27,6 +27,5 @@ int main(void) {
 
 	long long ret = solution(numbers);
 	cout << ret;
-
 	return 0;
 }
