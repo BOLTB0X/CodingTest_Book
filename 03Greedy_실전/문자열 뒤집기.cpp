@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+
 using namespace std;
 
 int solution(string str) {
@@ -13,17 +14,14 @@ int solution(string str) {
 	else 
 		one_cnt++;
 
-	for (int i = 0; i < size - 1; i++) {
-		//두번쨰 원소부터 확인
-		//다르다면
+	// 연속된 수를 바꾸는 것이므로
+	// 달라지는 부분마다 0,1인지 체크
+	for (int i = 0; i < size - 1; ++i) {
 		if (str[i] != str[i + 1]) {
-			//0으로 변환
-			if (str[i + 1] == '1') 
-				zero_cnt++;
-
-			//1로 변환
-			else 
+			if (str[i + 1] == '0')
 				one_cnt++;
+			else if (str[i + 1] == '1')
+				zero_cnt++;
 		}
 	}
 
