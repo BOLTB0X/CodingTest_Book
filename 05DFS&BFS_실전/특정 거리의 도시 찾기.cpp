@@ -1,78 +1,58 @@
 #include <iostream>
 #include <vector>
-#define MS 300001 //최대 길이
+#include <queue>
+#define Max_Size 300001
 
 using namespace std;
 
-int que[MS];
-int fr = 0, re = 0;
-vector<int> graph[MS];
+vector<int> adj[Max_Size];
+vector<int> visited;
 
-void enqueue(int data) {
-	que[re++] = data;
-	return;
-}
+vector<int> solution(int n, int m, int k, int x) {
+	vector<int> answer;
+	queue<int> que;
+	visited.resize(n + 1, 0); // 방문리스트 초기화
 
-int dequeue(void) {
-	return que[fr++];
-}
+	visited[x] = 1;
+	que.push(x);
 
-//너비우선 탐색
-void BFS(int n, int x, vector<int>& dist) {
-	enqueue(x);
-	dist[x] = 1;
+	while (!que.empty()) {
+		int cur = que.front();
+		que.pop();
 
-	//비어질때까지
-	while (fr < re) {
-		int cur = dequeue();
-
-		for (int& next : graph[cur]) {
-			//재방문 방지
-			if (dist[next] != 0)
+		for (int& next : adj[cur]) {
+			if (visited[next] != 0)
 				continue;
-
-			dist[next] = dist[cur] + 1;
-			enqueue(next);
+			visited[next] = visited[cur] + 1;
+			que.push(next);
 		}
 	}
-
-	return;
-}
-
-void solution(int n, int m, int k, int x) {
-	int flag = 0;
-
-	vector<int> dist(n + 1, 0); //거리리스트
-	BFS(n, x, dist); // 너비우선 탐색
 
 	for (int i = 1; i <= n; ++i) {
-		//자기 자신 제외
-		if (i == x)
-			continue;
-
-		// k 거리를 갖는 도시
-		if (dist[i] - 1 == k) {
-			cout << i << '\n';
-			flag = 1;
-		}
+		if (visited[i] - 1 == k)
+			answer.push_back(i);
 	}
 
-	if (flag == 0)
-		cout << "-1";
-	return;
+	if (answer.size() == 0)
+		answer.push_back(-1);
+	return answer;
 }
+
 int main(void) {
 	int n, m, k, x;
 
 	cin >> n >> m >> k >> x;
-
+	
 	for (int i = 0; i < m; ++i) {
 		int a, b;
+
 		cin >> a >> b;
-		graph[a].push_back(b);
+		adj[a].push_back(b);
 	}
 
-	solution(n, m, k, x);
+	vector<int> ret = solution(n, m, k, x);
+	for (int& r : ret)
+		cout << r << "\n";
 
 	return 0;
 }
