@@ -1,34 +1,62 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#define Max_Size 100001
 
 using namespace std;
 
-// ³ëµåÀÇ °³¼ö(V)¿Í °£¼±(Union ¿¬»ê)ÀÇ °³¼ö(E)
-// ³ëµåÀÇ °³¼ö´Â ÃÖ´ë 100,000°³¶ó°í °¡Á¤
-int v, e;
-int parent[100001]; // ºÎ¸ğ Å×ÀÌºí ÃÊ±âÈ­
-// ¸ğµç °£¼±À» ´ãÀ» ¸®½ºÆ®¿Í, ÃÖÁ¾ ºñ¿ëÀ» ´ãÀ» º¯¼ö
-vector<pair<int, pair<int, int> > > edges;
-int result = 0;
+struct Node{
+    int cost, a, b;
 
-// Æ¯Á¤ ¿ø¼Ò°¡ ¼ÓÇÑ ÁıÇÕÀ» Ã£±â
+    bool operator < (Node n) {
+        return cost < n.cost;
+    }
+};
+
+int v, e;
+int result = 0;
+// ë…¸ë“œì˜ ê°œìˆ˜ëŠ” ìµœëŒ€ 100,000
+int parent[Max_Size];
+vector<Node> edges; // ëª¨ë“  ê°„ì„ ì„ ë‹´ì„ ë¦¬ìŠ¤íŠ¸ì™€, ìµœì¢…ë¹„ìš©ì„ ë‹´ì„ ë³€ìˆ˜
+
 int find_Parent(int x) {
-    // ·çÆ® ³ëµå°¡ ¾Æ´Ï¶ó¸é, ·çÆ® ³ëµå¸¦ Ã£À» ¶§±îÁö Àç±ÍÀûÀ¸·Î È£Ãâ
-    if (x == parent[x]) 
+    // ë£¨íŠ¸ ë…¸ë“œê°€ ì•„ë‹ˆë¼ë©´, 
+    // ë£¨íŠ¸ ë…¸ë“œë¥¼ ì°¾ì„ ë•Œê¹Œì§€ ì¬ê·€ì  í˜¸ì¶œ
+    if (x == parent[x])
         return x;
+
     return parent[x] = find_Parent(parent[x]);
 }
 
-// µÎ ¿ø¼Ò°¡ ¼ÓÇÑ ÁıÇÕÀ» ÇÕÄ¡±â
-void unionParent(int a, int b) {
+// ë‘ ì›ì†Œê°€ ì†í•œ ì§‘í•©ì„ í•©ì¹˜ê¸°
+void union_Parent(int a, int b) {
     a = find_Parent(a);
     b = find_Parent(b);
 
-    if (a < b) 
+    if (a < b)
         parent[b] = a;
-    else 
+    else
         parent[a] = b;
+
+    return;
+}
+
+void solution(void) {
+    // ê°„ì„ ì„ ë¹„ìš©ìˆœìœ¼ë¡œ ì •ë ¬
+    sort(edges.begin(), edges.end());
+
+    // ê°„ì„ ì„ í•˜ë‚˜ì”© í™•ì¸
+    for (int i = 0; i < edges.size(); ++i) {
+        int ccost = edges[i].cost;
+        int ca = edges[i].a;
+        int cb = edges[i].b;
+
+        // ì‚¬ì´í´ì´ ë°œìƒí•˜ì§€ ì•ŠëŠ” ê²½ìš°ì—ë§Œ ì§‘í•© í¬í•¨
+        if (find_Parent(ca) != find_Parent(cb)) {
+            union_Parent(ca, cb);
+            result += ccost;
+        }
+    }
 
     return;
 }
@@ -36,33 +64,18 @@ void unionParent(int a, int b) {
 int main(void) {
     cin >> v >> e;
 
-    // ºÎ¸ğ Å×ÀÌºí»ó¿¡¼­, ºÎ¸ğ¸¦ ÀÚ±â ÀÚ½ÅÀ¸·Î ÃÊ±âÈ­
-    for (int i = 1; i <= v; i++) 
+    for (int i = 1; i <= v; ++i)
         parent[i] = i;
 
-    // ¸ğµç °£¼±¿¡ ´ëÇÑ Á¤º¸¸¦ ÀÔ·Â ¹Ş±â
+    // ëª¨ë“  ê°„ì„ ì— ëŒ€í•œ ì •ë³´ë¥¼ ì…ë ¥ ë°›ê¸°
     for (int i = 0; i < e; i++) {
         int a, b, cost;
         cin >> a >> b >> cost;
-        // ºñ¿ë¼øÀ¸·Î Á¤·ÄÇÏ±â À§ÇØ¼­ Æ©ÇÃÀÇ Ã¹ ¹øÂ° ¿ø¼Ò¸¦ ºñ¿ëÀ¸·Î ¼³Á¤
-        edges.push_back({ cost, {a, b} });
+        // ë¹„ìš©ìˆœìœ¼ë¡œ ì •ë ¬í•˜ê¸° ìœ„í•´ì„œ íŠœí”Œì˜ ì²« ë²ˆì§¸ ì›ì†Œë¥¼ ë¹„ìš©ìœ¼ë¡œ ì„¤ì •
+        edges.push_back({ cost, a,b });
     }
 
-    // °£¼±À» ºñ¿ë¼øÀ¸·Î Á¤·Ä
-    sort(edges.begin(), edges.end());
-
-    // °£¼±À» ÇÏ³ª¾¿ È®ÀÎÇÏ¸ç
-    for (int i = 0; i < edges.size(); i++) {
-        int cost = edges[i].first;
-        int a = edges[i].second.first;
-        int b = edges[i].second.second;
-
-        // »çÀÌÅ¬ÀÌ ¹ß»ıÇÏÁö ¾Ê´Â °æ¿ì¿¡¸¸ ÁıÇÕ¿¡ Æ÷ÇÔ
-        if (find_Parent(a) != find_Parent(b)) {
-            unionParent(a, b);
-            result += cost;
-        }
-    }
+    solution();
 
     cout << result << '\n';
     return 0;
