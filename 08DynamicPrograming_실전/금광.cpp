@@ -5,57 +5,49 @@ using namespace std;
 int board[21][21];
 int dp[21][21];
 
-//ÃÖ´ñ°ª
+// ìµœëŒ“ê°’
 int Max(int a, int b) {
 	return a > b ? a : b;
 }
 
-//´ÙÀÌ³ª¹Í ÇÁ·Î±×·¡¹Ö
-int do_Dynaminc(int n, int m) {
+// ë‹¤ì´ë‚˜ë¯¹ í”„ë¡œê·¸ë˜ë°
+int solution(int n, int m) {
 	int answer = 0;
+	int step1, step2, step3;
 
-	//ÃÊ±âÈ­
 	for (int i = 1; i <= n; ++i) {
-		for (int j = 1; j <= m; ++j)
+		for (int j = 1; j <=m; ++j) 
 			dp[i][j] = board[i][j];
 	}
 
-	int move1, move2, move3; //¿À¸¥ ÂÊ À§, ¿À¸¥ÂÊ, ¿À¸¥ÂÊ ¾Æ·¡
-	
-	//º¸ÅÒ¾÷
+	// ë³´í…€ì—…
 	for (int i = 1; i <= m; ++i) {
 		for (int j = 1; j <= n; ++j) {
-			//¿À¸¥ÂÊ À§
+			// ì˜¤ë¥¸ìª½ ìœ„
 			if (j == 1)
-				move1 = 0;
+				step1 = 0;
 			else
-				move1 = dp[j - 1][i - 1];
-
-			//¿À¸¥ÂÊ ¾Æ·¡
-			if (j == n)
-				move3 = 0;
-			else
-				move3 = dp[j + 1][i - 1];
+				step1 = dp[j - 1][i - 1];
 			
-			//¿À¸¥ÂÊ
-			move2 = dp[j][i - 1];
-			//dp
-			dp[j][i] = dp[j][i] + Max(move1, Max(move2, move3));
+			// ì˜¤ë¥¸ìª½ ì•„ë˜
+			if (j == n)
+				step3 = 0;
+			else
+				step3 = dp[j + 1][i - 1];
+			
+			// ì˜¤ë¥¸ìª½
+			step2 = dp[j][i - 1];
+
+			dp[j][i] = dp[j][i] + Max(step1, Max(step2, step3));
 		}
 	}
 
 	for (int i = 1; i <= n; ++i)
 		answer = Max(answer, dp[i][m]);
-
 	return answer;
 }
 
 int main(void) {
-	//ÃÊ±âÈ­
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-
 	int T;
 	cin >> T;
 
@@ -67,8 +59,9 @@ int main(void) {
 			for (int j = 1; j <= m; ++j)
 				cin >> board[i][j];
 		}
-		//´ÙÀÌ³ª¹Í 
-		cout << do_Dynaminc(n, m) << '\n';
+		
+		int ret = solution(n, m);
+		cout << ret << '\n';
 	}
 
 	return 0;
