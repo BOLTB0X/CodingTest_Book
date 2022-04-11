@@ -26,6 +26,7 @@ void quickSort(int* arr, int start, int end) {
 	quickSort(arr, start, right - 1);
 	quickSort(arr, right + 1, end);
 }
+
 int main(void) {
 	quickSort(arr, 0, n - 1);
 	for (int i = 0; i < n; i++) {
